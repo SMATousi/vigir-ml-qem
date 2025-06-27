@@ -1,33 +1,42 @@
 """
-shallow_transformer_estimator.py
-A scikit‑learn–style PyTorch estimator that fits a very small Transformer
-with an attention mechanism to 1×684‑dimensional samples.
+shallow_transformer_estimator.py (updated)
+====================================================
+A scikit‑learn–style PyTorch wrapper around a *very* shallow Transformer
+encoder (one attention block) for 1 × 684 inputs.  Now supports:
 
-Usage example
--------------
-    import numpy as np
-    from shallow_transformer_estimator import SimpleTransformerEstimator
+* **Learning‑rate schedulers**: `None`, `'step'`, or `'plateau'`.
+* **Pre‑trained weight loading** via the `pretrained_path` kwarg *or* the
+  `.load(path)` helper, with an optional `freeze_pretrained` flag.
 
-    X = np.random.rand(100, 684).astype(np.float32)
-    y = np.random.rand(100)
+Typical use
+-----------
+```python
+from shallow_transformer_estimator import SimpleTransformerEstimator
 
-    model = SimpleTransformerEstimator(task='regression', n_epochs=50)
-    model.fit(X, y)
-    preds = model.predict(X)
-    print(preds[:5])
+# Train from scratch
+est = SimpleTransformerEstimator(task="regression", n_epochs=30)
+est.fit(X_train, y_train)
+est.save("model.pt")
 
-Author: ChatGPT
+# Fine‑tune from a checkpoint, freezing earlier layers
+ft = SimpleTransformerEstimator(pretrained_path="model.pt", freeze_pretrained=True)
+ft.fit(new_X, new_y)
+```
 """
+from __future__ import annotations
 
+import os
 import numpy as np
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 from tqdm import tqdm
 
-
+# -----------------------------------------------------------------------------
+# Positional encoding
+# -----------------------------------------------------------------------------
 class _PositionalEncoding(nn.Module):
-    """Standard sine–cosine positional encoding."""
+    """Sine–cosine positional encoding (no learned parameters)."""
 
     def __init__(self, d_model: int, max_len: int = 684):
         super().__init__()
@@ -38,16 +47,16 @@ class _PositionalEncoding(nn.Module):
         )
         pe[:, 0::2] = torch.sin(position * div_term)
         pe[:, 1::2] = torch.cos(position * div_term)
-        pe = pe.unsqueeze(0)  # (1, max_len, d_model)
-        self.register_buffer("pe", pe)
+        self.register_buffer("pe", pe.unsqueeze(0))  # → (1, L, D)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:  # (B, L, D)
         return x + self.pe[:, : x.size(1)]
 
 
+# -----------------------------------------------------------------------------
+# Shallow Transformer body
+# -----------------------------------------------------------------------------
 class _ShallowTransformer(nn.Module):
-    """A single‑layer Transformer encoder with average pooling head."""
-
     def __init__(
         self,
         seq_len: int = 684,
@@ -72,29 +81,34 @@ class _ShallowTransformer(nn.Module):
         self.head = nn.Linear(d_model, n_outputs)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:  # x: (B, L)
-        x = x.unsqueeze(-1)  # (B, L, 1)
-        x = self.input_proj(x)
+        x = self.input_proj(x.unsqueeze(-1))  # (B, L, D)
         x = self.pos_encoder(x)
         x = self.transformer(x)
-        x = x.mean(dim=1)  # global average pooling over sequence length
+        x = x.mean(dim=1)  # global average pooling
         return self.head(x)
 
 
+# -----------------------------------------------------------------------------
+# Estimator wrapper
+# -----------------------------------------------------------------------------
 class SimpleTransformerEstimator:
-    """A minimal Transformer estimator with scikit-learn‑like API (fit / predict).
+    """Minimal Transformer with `fit` / `predict` & checkpoint utilities.
 
     Parameters
     ----------
-    task            : 'regression' or 'classification'
-    lr_scheduler    : None | 'step' | 'plateau'
-                      - 'step': StepLR with *step_size* / *gamma*
-                      - 'plateau': ReduceLROnPlateau with *gamma*, patience=10
-    step_size       : epochs between LR drops for StepLR
-    gamma           : LR multiplier when scheduler steps
+    task : {'regression', 'classification'}
+    lr_scheduler : None | 'step' | 'plateau'
+    step_size / gamma : scheduler hyper‑parameters
+    pretrained_path : path to a `.pt` file created via `.save()` or any state‑dict
+    freeze_pretrained : if *True*, loaded parameters are frozen before training
     """
 
+    # ------------------------------------------------------------------
+    # Construction
+    # ------------------------------------------------------------------
     def __init__(
         self,
+        *,
         task: str = "regression",
         d_model: int = 32,
         nhead: int = 4,
@@ -103,17 +117,21 @@ class SimpleTransformerEstimator:
         weight_decay: float = 1e-4,
         n_epochs: int = 200,
         batch_size: int = 16,
-        lr_scheduler: str = None,
+        lr_scheduler: str | None = None,
         step_size: int = 20,
         gamma: float = 0.5,
+        pretrained_path: str | None = None,
+        freeze_pretrained: bool = False,
         verbose: bool = True,
-        device: str = None,
+        device: str | None = None,
         seq_len: int = 684,
     ):
+        # --- arg checks --------------------------------------------------
         if task not in {"regression", "classification"}:
             raise ValueError("task must be 'regression' or 'classification'")
         if lr_scheduler not in {None, "step", "plateau"}:
             raise ValueError("lr_scheduler must be None, 'step', or 'plateau'")
+        # --- store -------------------------------------------------------
         self.task = task
         self.d_model = d_model
         self.nhead = nhead
@@ -125,6 +143,8 @@ class SimpleTransformerEstimator:
         self.lr_scheduler = lr_scheduler
         self.step_size = step_size
         self.gamma = gamma
+        self.pretrained_path = pretrained_path
+        self.freeze_pretrained = freeze_pretrained
         self.verbose = verbose
         self.seq_len = seq_len
         self.device = torch.device(
@@ -145,12 +165,54 @@ class SimpleTransformerEstimator:
             dropout=0.1,
             n_outputs=n_outputs,
         ).to(self.device)
+        # ------- load checkpoint if requested ---------------------------
+        if self.pretrained_path is not None:
+            if not os.path.isfile(self.pretrained_path):
+                raise FileNotFoundError(self.pretrained_path)
+            state_dict = torch.load(self.pretrained_path, map_location=self.device)
+            missing, unexpected = self.model_.load_state_dict(state_dict, strict=False)
+            if self.verbose:
+                print(
+                    f"Loaded pretrained weights from '{self.pretrained_path}' "
+                    f"(missing={len(missing)}, unexpected={len(unexpected)})"
+                )
+            if self.freeze_pretrained:
+                for p in self.model_.parameters():
+                    p.requires_grad = False
 
     # ------------------------------------------------------------------
-    # Public API
+    # Public interface
+    # ------------------------------------------------------------------
+    def save(self, path: str):
+        """Save model weights to *path* (state_dict)."""
+        if self.model_ is None:
+            raise RuntimeError("No model to save; call fit/load first.")
+        torch.save(self.model_.state_dict(), path)
+        if self.verbose:
+            print(f"Saved weights to '{path}'.")
+
+    def load(self, path: str, *, freeze: bool | None = None):
+        """Load weights into the *current* estimator.
+
+        If the model is not built yet (no call to `fit`) the checkpoint will be
+        remembered and applied when `_build_model` is invoked.
+        """
+        if freeze is not None:
+            self.freeze_pretrained = freeze
+        self.pretrained_path = path
+        if self.model_ is not None:
+            state_dict = torch.load(path, map_location=self.device)
+            self.model_.load_state_dict(state_dict, strict=False)
+            if self.freeze_pretrained:
+                for p in self.model_.parameters():
+                    p.requires_grad = False
+        return self
+
+    # ------------------------------------------------------------------
+    # Fit / predict
     # ------------------------------------------------------------------
     def fit(self, X, y):
-        """Fit the model."""
+        """Fit (or fine‑tune) the model."""
         X = np.asarray(X, dtype=np.float32)
         y = np.asarray(y)
         if X.ndim != 2 or X.shape[1] != self.seq_len:
@@ -158,20 +220,18 @@ class SimpleTransformerEstimator:
         if y.ndim == 1:
             y = y.reshape(-1, 1)
         n_outputs = y.shape[1]
-        self._build_model(n_outputs)
+        self._build_model(n_outputs)  # also loads / freezes if needed
 
         criterion = (
             nn.MSELoss() if self.task == "regression" else nn.CrossEntropyLoss()
         )
-        optimizer = torch.optim.Adam(
-            self.model_.parameters(), lr=self.lr, weight_decay=self.weight_decay
-        )
+        # Do not include frozen params in optimizer
+        trainable_params = filter(lambda p: p.requires_grad, self.model_.parameters())
+        optimizer = torch.optim.Adam(trainable_params, lr=self.lr, weight_decay=self.weight_decay)
 
         # ---------------- LR scheduler ----------------
         if self.lr_scheduler == "step":
-            scheduler = torch.optim.lr_scheduler.StepLR(
-                optimizer, step_size=self.step_size, gamma=self.gamma
-            )
+            scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=self.step_size, gamma=self.gamma)
         elif self.lr_scheduler == "plateau":
             scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
                 optimizer, mode="min", factor=self.gamma, patience=10
@@ -180,15 +240,13 @@ class SimpleTransformerEstimator:
             scheduler = None
         # ------------------------------------------------
 
-        dataset = TensorDataset(
-            torch.tensor(X), torch.tensor(y, dtype=torch.float32)
-        )
+        dataset = TensorDataset(torch.tensor(X), torch.tensor(y, dtype=torch.float32))
         loader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True)
 
         self.model_.train()
-        for epoch in tqdm(range(self.n_epochs)):
+        for epoch in range(self.n_epochs):
             epoch_loss = 0.0
-            for xb, yb in loader:
+            for xb, yb in tqdm(loader, disable=not self.verbose):
                 xb, yb = xb.to(self.device), yb.to(self.device)
                 optimizer.zero_grad()
                 preds = self.model_(xb)
@@ -203,7 +261,7 @@ class SimpleTransformerEstimator:
             if scheduler is not None:
                 if self.lr_scheduler == "plateau":
                     scheduler.step(epoch_loss / len(dataset))
-                else:  # step lr
+                else:
                     scheduler.step()
             # ------------------------
 
@@ -212,17 +270,19 @@ class SimpleTransformerEstimator:
             ):
                 current_lr = optimizer.param_groups[0]["lr"]
                 print(
-                    f"Epoch {epoch + 1}/{self.n_epochs} - "
-                    f"loss: {epoch_loss / len(dataset):.4f} - lr: {current_lr:.2e}"
+                    f"Epoch {epoch + 1}/{self.n_epochs} | "
+                    f"loss={epoch_loss / len(dataset):.4f} | lr={current_lr:.2e}"
                 )
         return self
 
     @torch.no_grad()
     def predict(self, X):
-        """Generate predictions for X."""
+        """Generate predictions for *X*."""
         if self.model_ is None:
-            raise RuntimeError("You must call fit before predict.")
+            raise RuntimeError("You must call fit or load before predict.")
         X = np.asarray(X, dtype=np.float32)
+        if X.ndim != 2 or X.shape[1] != self.seq_len:
+            raise ValueError(f"X must have shape (n_samples, {self.seq_len})")
         dataset = TensorDataset(torch.tensor(X))
         loader = DataLoader(dataset, batch_size=self.batch_size, shuffle=False)
         self.model_.eval()
@@ -232,16 +292,22 @@ class SimpleTransformerEstimator:
             out = self.model_(xb).cpu().numpy()
             preds.append(out)
         preds = np.vstack(preds)
-        if self.task == "regression":
-            return preds.squeeze()
-        else:
-            return preds.argmax(axis=-1)
+        return preds.squeeze() if self.task == "regression" else preds.argmax(axis=-1)
 
 
 if __name__ == "__main__":
-    # Quick self‑test
-    X_demo = np.random.rand(100, 684).astype(np.float32)
-    y_demo = np.random.rand(100)
-    model = SimpleTransformerEstimator(n_epochs=5, verbose=False)
-    model.fit(X_demo, y_demo)
-    print("Demo preds:", model.predict(X_demo[:5]))
+    # Smoke‑test with and without pretraining
+    X_demo = np.random.rand(40, 684).astype(np.float32)
+    y_demo = np.random.rand(40)
+
+    # Train & save
+    m1 = SimpleTransformerEstimator(n_epochs=3, verbose=False)
+    m1.fit(X_demo, y_demo)
+    m1.save("demo.pt")
+
+    # Fine‑tune
+    m2 = SimpleTransformerEstimator(
+        pretrained_path="demo.pt", freeze_pretrained=True, n_epochs=2, verbose=False
+    )
+    m2.fit(X_demo, y_demo)
+    print("OK – fine‑tune preds:", m2.predict(X_demo[:3]))
