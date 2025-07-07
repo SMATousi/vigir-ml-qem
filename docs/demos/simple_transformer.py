@@ -191,13 +191,26 @@ class SimpleTransformerEstimator:
     # ------------------------------------------------------------------
     # Public interface
     # ------------------------------------------------------------------
-    def save(self, path: str):
-        """Save model weights to *path* (state_dict)."""
+    def save(self, path: str, wandb_artifact_name: str = None):
+        """Save model weights to *path* (state_dict) and optionally as wandb artifact."""
         if self.model_ is None:
             raise RuntimeError("No model to save; call fit/load first.")
         torch.save(self.model_.state_dict(), path)
         if self.verbose:
             print(f"Saved weights to '{path}'.")
+        
+        # Save as wandb artifact if logging is enabled and artifact name is provided
+        if self.wandb_logging and wandb_artifact_name is not None:
+            try:
+                import wandb
+                artifact = wandb.Artifact(name=wandb_artifact_name, type="model")
+                artifact.add_file(path)
+                wandb.log_artifact(artifact)
+                if self.verbose:
+                    print(f"Saved model as wandb artifact: {wandb_artifact_name}")
+            except ImportError:
+                if self.verbose:
+                    print("Warning: wandb not installed, skipping artifact saving")
 
     def load(self, path: str, *, freeze: bool | None = None):
         """Load weights into the *current* estimator.

@@ -412,6 +412,9 @@ except ImportError:
     print("Warning: wandb not installed. Training will proceed without logging.")
     WANDB_AVAILABLE = False
 
+# Import for timestamps
+from datetime import datetime
+
 np.random.seed(0)
 torch.manual_seed(0)
 
@@ -447,17 +450,24 @@ number_of_epochs = 10
 number_heads = 4
 model_depth = 64
 
+# Create timestamp for this training run
+timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
 # Initialize wandb for CLIP+Transformer training
 if WANDB_AVAILABLE:
     wandb.init(project="vigir-ml-qem", 
-               name="CLIP_Transformer_Training",
+               name=f"CLIP_Transformer_Training_{timestamp}",
                config={
                    "n_epochs": number_of_epochs,
                    "n_heads": number_heads,
                    "model_depth": model_depth,
                    "lr": 0.001,
+                   "lr_scheduler": "step",
+                   "step_size": 300,
                    "model_type": "CLIP+Transformer",
-                   "seq_len": 682
+                   "seq_len": 682,
+                   "timestamp": timestamp,
+                   "n_qubits": 5
                })
 
 trained_transformer_list_with_CLIP = []
@@ -480,6 +490,12 @@ for q in range(5):
     
     model.fit(X_train, y_train.iloc[:, q])
     model.fit(few_X_train, few_y_train.iloc[:, q])
+    
+    # Save model locally and as wandb artifact
+    local_path = f"clip_transformer_q{q}_{timestamp}_epoch{number_of_epochs}.pt"
+    artifact_name = f"clip_transformer_q{q}_{timestamp}"
+    model.save(local_path, wandb_artifact_name=artifact_name)
+    
     trained_transformer_list_with_CLIP.append(model)
     print(f"Done with {q}")
 
@@ -490,17 +506,24 @@ if WANDB_AVAILABLE:
     wandb.finish()
 
 
-# Initialize wandb for regular Transformer training
+# Initialize wandb for regular Transformer training  
+# Create new timestamp for second training run
+timestamp_regular = datetime.now().strftime("%Y%m%d_%H%M%S")
+
 if WANDB_AVAILABLE:
     wandb.init(project="vigir-ml-qem", 
-               name="Regular_Transformer_Training",
+               name=f"Regular_Transformer_Training_{timestamp_regular}",
                config={
                    "n_epochs": number_of_epochs,
-                   "n_heads": number_heads,
+                   "n_heads": number_heads, 
                    "model_depth": model_depth,
                    "lr": 0.001,
+                   "lr_scheduler": "step",
+                   "step_size": 300,
                    "model_type": "Regular_Transformer",
-                   "seq_len": 170
+                   "seq_len": 682,
+                   "timestamp": timestamp_regular,
+                   "n_qubits": 5
                })
 
 trained_transformer_list = []
@@ -523,6 +546,12 @@ for q in range(5):
     
     model.fit(normal_X_train, normal_y_train.iloc[:, q])
     model.fit(few_normal_X_train, few_normal_y_train.iloc[:, q])
+    
+    # Save model locally and as wandb artifact
+    local_path = f"regular_transformer_q{q}_{timestamp_regular}_epoch{number_of_epochs}.pt"
+    artifact_name = f"regular_transformer_q{q}_{timestamp_regular}"
+    model.save(local_path, wandb_artifact_name=artifact_name)
+    
     trained_transformer_list.append(model)
     print(f"Done with {q}")
 
