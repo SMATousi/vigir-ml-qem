@@ -243,77 +243,77 @@ few_normal_X_test = pd.DataFrame(few_normal_X_test)
 few_normal_y_test = pd.DataFrame(few_normal_y_test)
 
 
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
-rfr_tree_list = []
-for q in range(5):
-    rfr = RandomForestRegressor(n_estimators=500, verbose=1, n_jobs=-1)
-    rfr.fit(X_train, y_train.iloc[:, q])
-    rfr_tree_list.append(rfr)
-    print(f"Done with the {q} model")
+# from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+# rfr_tree_list = []
+# for q in range(5):
+#     rfr = RandomForestRegressor(n_estimators=500, verbose=1, n_jobs=-1)
+#     rfr.fit(X_train, y_train.iloc[:, q])
+#     rfr_tree_list.append(rfr)
+#     print(f"Done with the {q} model")
 
-print(f"Done with the CLIP models. Moving to the normal ones ...")
+# print(f"Done with the CLIP models. Moving to the normal ones ...")
 
-normal_rfr_tree_list = []
-for q in range(5):
-    rfr = RandomForestRegressor(n_estimators=100, verbose=0, n_jobs=-1)
-    rfr.fit(normal_X_train, normal_y_train.iloc[:, q])
-    normal_rfr_tree_list.append(rfr)
-    print(f"Done with the {q} model")
+# normal_rfr_tree_list = []
+# for q in range(5):
+#     rfr = RandomForestRegressor(n_estimators=100, verbose=0, n_jobs=-1)
+#     rfr.fit(normal_X_train, normal_y_train.iloc[:, q])
+#     normal_rfr_tree_list.append(rfr)
+#     print(f"Done with the {q} model")
 
-few_normal_rfr_tree_list = []
-for q in range(5):
-    rfr = RandomForestRegressor(n_estimators=100, verbose=0, n_jobs=-1)
-    rfr.fit(few_normal_X_train, few_normal_y_train.iloc[:, q])
-    few_normal_rfr_tree_list.append(rfr)
-    print(f"Done with the {q} model")
+# few_normal_rfr_tree_list = []
+# for q in range(5):
+#     rfr = RandomForestRegressor(n_estimators=100, verbose=0, n_jobs=-1)
+#     rfr.fit(few_normal_X_train, few_normal_y_train.iloc[:, q])
+#     few_normal_rfr_tree_list.append(rfr)
+#     print(f"Done with the {q} model")
 
-distances = []
+# distances = []
 
-num_spins = 5
+# num_spins = 5
 
-for batch_X, batch_y in test_loader:
-    out = []
-    for q, model in enumerate(rfr_tree_list):
-        out.append(model.predict(batch_X[:, :]))
-    out = np.array(out).transpose()
+# for batch_X, batch_y in test_loader:
+#     out = []
+#     for q, model in enumerate(rfr_tree_list):
+#         out.append(model.predict(batch_X[:, :]))
+#     out = np.array(out).transpose()
 
-    for ideal, noisy, ngm_mitigated in zip(
-        batch_y.tolist(),
-        batch_X[:, -5:].tolist(),
-        out.tolist()
-    ):
-        for q in range(5):
-            ideal_q = ideal[q]
-            noisy_q = noisy[q]
-            ngm_mitigated_q = ngm_mitigated[q]
-            distances.append({
-                f"ideal_{q}": ideal_q,
-                f"noisy_{q}": noisy_q,
-                f"ngm_mitigated_{q}": ngm_mitigated_q,
-                f"dist_noisy_{q}": np.abs(ideal_q - noisy_q),
-                f"dist_mitigated_{q}": np.abs(ideal_q - ngm_mitigated_q),
-                f"dist_sq_noisy_{q}": np.square(ideal_q - noisy_q),
-                f"dist_sq_mitigated_{q}": np.square(ideal_q - ngm_mitigated_q),
-            })
+#     for ideal, noisy, ngm_mitigated in zip(
+#         batch_y.tolist(),
+#         batch_X[:, -5:].tolist(),
+#         out.tolist()
+#     ):
+#         for q in range(5):
+#             ideal_q = ideal[q]
+#             noisy_q = noisy[q]
+#             ngm_mitigated_q = ngm_mitigated[q]
+#             distances.append({
+#                 f"ideal_{q}": ideal_q,
+#                 f"noisy_{q}": noisy_q,
+#                 f"ngm_mitigated_{q}": ngm_mitigated_q,
+#                 f"dist_noisy_{q}": np.abs(ideal_q - noisy_q),
+#                 f"dist_mitigated_{q}": np.abs(ideal_q - ngm_mitigated_q),
+#                 f"dist_sq_noisy_{q}": np.square(ideal_q - noisy_q),
+#                 f"dist_sq_mitigated_{q}": np.square(ideal_q - ngm_mitigated_q),
+#             })
 
-plt.style.use({'figure.facecolor':'white'})
+# plt.style.use({'figure.facecolor':'white'})
 
-df = pd.DataFrame(distances)
+# df = pd.DataFrame(distances)
 
-for q in range(5):
-    print(f'RMSE_noisy_{q}:', np.sqrt(df[f"dist_sq_noisy_{q}"].mean()))
-    print(f'RMSE_mitigated_{q}:', np.sqrt(df[f"dist_sq_mitigated_{q}"].mean()))
+# for q in range(5):
+#     print(f'RMSE_noisy_{q}:', np.sqrt(df[f"dist_sq_noisy_{q}"].mean()))
+#     print(f'RMSE_mitigated_{q}:', np.sqrt(df[f"dist_sq_mitigated_{q}"].mean()))
 
-print(f'RMSE_noisy:', np.sqrt(np.mean([df[f"dist_sq_noisy_{q}"].mean() for q in range(4)])))
-print(f'RMSE_mitigated:', np.sqrt(np.mean([df[f"dist_sq_mitigated_{q}"].mean() for q in range(4)])))
+# print(f'RMSE_noisy:', np.sqrt(np.mean([df[f"dist_sq_noisy_{q}"].mean() for q in range(4)])))
+# print(f'RMSE_mitigated:', np.sqrt(np.mean([df[f"dist_sq_mitigated_{q}"].mean() for q in range(4)])))
 
-sns.boxplot(data=df[["dist_noisy_0", "dist_mitigated_0", "dist_noisy_1", "dist_mitigated_1", "dist_noisy_2", "dist_mitigated_2", "dist_noisy_3", "dist_mitigated_3", "dist_noisy_4", "dist_mitigated_4"]], orient="h", showfliers = False)
-plt.title("Dist to ideal exp value")
-plt.show()
-
-sns.histplot([df['ideal_0'], df['noisy_0'], df["ngm_mitigated_0"]], kde=True, bins=40)
-plt.title("Exp values distribution")
+# sns.boxplot(data=df[["dist_noisy_0", "dist_mitigated_0", "dist_noisy_1", "dist_mitigated_1", "dist_noisy_2", "dist_mitigated_2", "dist_noisy_3", "dist_mitigated_3", "dist_noisy_4", "dist_mitigated_4"]], orient="h", showfliers = False)
+# plt.title("Dist to ideal exp value")
 # plt.show()
+
+# sns.histplot([df['ideal_0'], df['noisy_0'], df["ngm_mitigated_0"]], kde=True, bins=40)
+# plt.title("Exp values distribution")
+# # plt.show()
 
 def evaluate_loader(test_loader, model_list, label: str, n_qbits=5):
     results = []
@@ -346,43 +346,43 @@ def evaluate_loader(test_loader, model_list, label: str, n_qbits=5):
                 })
     return results
 
-ngm_results = evaluate_loader(test_loader, rfr_tree_list, label="RF+CLIP+LargeData")
-normal_results = evaluate_loader(normal_test_loader, normal_rfr_tree_list, label="RF+LargeData")
-few_normal_results = evaluate_loader(few_normal_test_loader, few_normal_rfr_tree_list, label="RF+FewData")
-all_results = ngm_results + normal_results + few_normal_results
+# ngm_results = evaluate_loader(test_loader, rfr_tree_list, label="RF+CLIP+LargeData")
+# normal_results = evaluate_loader(normal_test_loader, normal_rfr_tree_list, label="RF+LargeData")
+# few_normal_results = evaluate_loader(few_normal_test_loader, few_normal_rfr_tree_list, label="RF+FewData")
+# all_results = ngm_results + normal_results + few_normal_results
 
-df = pd.DataFrame(all_results)
+# df = pd.DataFrame(all_results)
 
-for q in range(5):
-    for label in ["RF+CLIP+LargeData", "RF+LargeData", "RF+FewData"]:
-        subset = df[df["source"] == label]
-        rmse = np.sqrt(subset[f"dist_sq_{q}"].mean())
-        rmse_mitigated = np.sqrt(subset[f"dist_sq_mitigated_{q}"].mean())
-        print(f"[{label}] RMSE_input_{q}: {rmse:.4f}, RMSE_mitigated_{q}: {rmse_mitigated:.4f}")
+# for q in range(5):
+#     for label in ["RF+CLIP+LargeData", "RF+LargeData", "RF+FewData"]:
+#         subset = df[df["source"] == label]
+#         rmse = np.sqrt(subset[f"dist_sq_{q}"].mean())
+#         rmse_mitigated = np.sqrt(subset[f"dist_sq_mitigated_{q}"].mean())
+#         print(f"[{label}] RMSE_input_{q}: {rmse:.4f}, RMSE_mitigated_{q}: {rmse_mitigated:.4f}")
 
-print("------ Overall RMSEs ------")
-for label in ["RF+CLIP+LargeData", "RF+LargeData", "RF+FewData"]:
-    subset = df[df["source"] == label]
-    rmse = np.sqrt(np.mean([subset[f"dist_sq_{q}"].mean() for q in range(5)]))
-    rmse_mitigated = np.sqrt(np.mean([subset[f"dist_sq_mitigated_{q}"].mean() for q in range(5)]))
-    print(f"[{label}] RMSE_input: {rmse:.4f}, RMSE_mitigated: {rmse_mitigated:.4f}")
+# print("------ Overall RMSEs ------")
+# for label in ["RF+CLIP+LargeData", "RF+LargeData", "RF+FewData"]:
+#     subset = df[df["source"] == label]
+#     rmse = np.sqrt(np.mean([subset[f"dist_sq_{q}"].mean() for q in range(5)]))
+#     rmse_mitigated = np.sqrt(np.mean([subset[f"dist_sq_mitigated_{q}"].mean() for q in range(5)]))
+#     print(f"[{label}] RMSE_input: {rmse:.4f}, RMSE_mitigated: {rmse_mitigated:.4f}")
 
 
-melted = pd.DataFrame()
+# melted = pd.DataFrame()
 
-for q in range(5):
-    for metric in ["dist", "dist_mitigated"]:
-        temp = df[[f"{metric}_{q}", "source"]].copy()
-        temp = temp.rename(columns={f"{metric}_{q}": "value"})
-        temp["qubit"] = f"q{q}"
-        temp["type"] = "input" if "dist_" == metric else "mitigated"
-        melted = pd.concat([melted, temp], ignore_index=True)
+# for q in range(5):
+#     for metric in ["dist", "dist_mitigated"]:
+#         temp = df[[f"{metric}_{q}", "source"]].copy()
+#         temp = temp.rename(columns={f"{metric}_{q}": "value"})
+#         temp["qubit"] = f"q{q}"
+#         temp["type"] = "input" if "dist_" == metric else "mitigated"
+#         melted = pd.concat([melted, temp], ignore_index=True)
 
-plt.figure(figsize=(12, 6))
-sns.boxplot(data=melted, x="value", y="qubit", hue="source", palette="Set2", showfliers=False)
-plt.title("Distance to Ideal Value by Qubit (Input Only)")
-plt.xlabel("Absolute Distance")
-plt.ylabel("Qubit")
+# plt.figure(figsize=(12, 6))
+# sns.boxplot(data=melted, x="value", y="qubit", hue="source", palette="Set2", showfliers=False)
+# plt.title("Distance to Ideal Value by Qubit (Input Only)")
+# plt.xlabel("Absolute Distance")
+# plt.ylabel("Qubit")
 # plt.savefig("Normal-vs-CLIP-RandomForests.png")
 # plt.show()
 
@@ -535,45 +535,45 @@ if WANDB_AVAILABLE:
 
 
 
-trans_clip_results = evaluate_loader(test_loader, trained_transformer_list_with_CLIP, label="CLIP+Transformer+LargeData", n_qbits=1)
-normal_results = evaluate_loader(few_normal_test_loader, few_normal_rfr_tree_list, label="RandomForests+FewData", n_qbits=1)
-trans_results = evaluate_loader(normal_test_loader, trained_transformer_list, label="Transformer+LargeData", n_qbits=1)
-all_results = trans_clip_results + normal_results + trans_results
+# trans_clip_results = evaluate_loader(test_loader, trained_transformer_list_with_CLIP, label="CLIP+Transformer+LargeData", n_qbits=1)
+# normal_results = evaluate_loader(few_normal_test_loader, few_normal_rfr_tree_list, label="RandomForests+FewData", n_qbits=1)
+# trans_results = evaluate_loader(normal_test_loader, trained_transformer_list, label="Transformer+LargeData", n_qbits=1)
+# all_results = trans_clip_results + normal_results + trans_results
 
-df = pd.DataFrame(all_results)
+# df = pd.DataFrame(all_results)
 
-n_qbits = 1
+# n_qbits = 1
 
-for q in range(n_qbits):
-    for label in ["CLIP+Transformer+LargeData", "RandomForests+FewData", "Transformer+LargeData"]:
-        subset = df[df["source"] == label]
-        rmse = np.sqrt(subset[f"dist_sq_{q}"].mean())
-        rmse_mitigated = np.sqrt(subset[f"dist_sq_mitigated_{q}"].mean())
-        print(f"[{label}] RMSE_input_{q}: {rmse:.4f}, RMSE_mitigated_{q}: {rmse_mitigated:.4f}")
+# for q in range(n_qbits):
+#     for label in ["CLIP+Transformer+LargeData", "RandomForests+FewData", "Transformer+LargeData"]:
+#         subset = df[df["source"] == label]
+#         rmse = np.sqrt(subset[f"dist_sq_{q}"].mean())
+#         rmse_mitigated = np.sqrt(subset[f"dist_sq_mitigated_{q}"].mean())
+#         print(f"[{label}] RMSE_input_{q}: {rmse:.4f}, RMSE_mitigated_{q}: {rmse_mitigated:.4f}")
 
-print("------ Overall RMSEs ------")
-for label in ["CLIP+Transformer+LargeData", "RandomForests+FewData", "Transformer+LargeData"]:
-    subset = df[df["source"] == label]
-    rmse = np.sqrt(np.mean([subset[f"dist_sq_{q}"].mean() for q in range(n_qbits)]))
-    rmse_mitigated = np.sqrt(np.mean([subset[f"dist_sq_mitigated_{q}"].mean() for q in range(n_qbits)]))
-    print(f"[{label}] RMSE_input: {rmse:.4f}, RMSE_mitigated: {rmse_mitigated:.4f}")
+# print("------ Overall RMSEs ------")
+# for label in ["CLIP+Transformer+LargeData", "RandomForests+FewData", "Transformer+LargeData"]:
+#     subset = df[df["source"] == label]
+#     rmse = np.sqrt(np.mean([subset[f"dist_sq_{q}"].mean() for q in range(n_qbits)]))
+#     rmse_mitigated = np.sqrt(np.mean([subset[f"dist_sq_mitigated_{q}"].mean() for q in range(n_qbits)]))
+#     print(f"[{label}] RMSE_input: {rmse:.4f}, RMSE_mitigated: {rmse_mitigated:.4f}")
 
 
-melted = pd.DataFrame()
+# melted = pd.DataFrame()
 
-for q in range(n_qbits):
-    for metric in ["dist", "dist_mitigated"]:
-        temp = df[[f"{metric}_{q}", "source"]].copy()
-        temp = temp.rename(columns={f"{metric}_{q}": "value"})
-        temp["qubit"] = f"q{q}"
-        temp["type"] = "input" if "dist_" == metric else "mitigated"
-        melted = pd.concat([melted, temp], ignore_index=True)
+# for q in range(n_qbits):
+#     for metric in ["dist", "dist_mitigated"]:
+#         temp = df[[f"{metric}_{q}", "source"]].copy()
+#         temp = temp.rename(columns={f"{metric}_{q}": "value"})
+#         temp["qubit"] = f"q{q}"
+#         temp["type"] = "input" if "dist_" == metric else "mitigated"
+#         melted = pd.concat([melted, temp], ignore_index=True)
 
-plt.figure(figsize=(12, 6))
-sns.boxplot(data=melted, x="value", y="qubit", hue="source", palette="Set2", showfliers=False)
-plt.title("Distance to Ideal Value by Qubit (Input Only)")
-plt.xlabel("Absolute Distance")
-plt.ylabel("Qubit")
+# plt.figure(figsize=(12, 6))
+# sns.boxplot(data=melted, x="value", y="qubit", hue="source", palette="Set2", showfliers=False)
+# plt.title("Distance to Ideal Value by Qubit (Input Only)")
+# plt.xlabel("Absolute Distance")
+# plt.ylabel("Qubit")
 # plt.savefig("pretraining-1.png")
 # plt.show()
 
