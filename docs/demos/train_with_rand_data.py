@@ -446,7 +446,7 @@ few_normal_y_test = pd.DataFrame(few_normal_y_test)
 #                                    seq_len=682)
 # model.fit(X_train, y_train)
 
-number_of_epochs = 10
+number_of_epochs = 1000
 number_heads = 4
 model_depth = 64
 
