@@ -125,6 +125,10 @@ class SimpleTransformerEstimator:
         verbose: bool = True,
         device: str | None = None,
         seq_len: int = 684,
+        wandb_logging: bool = False,
+        eval_data: tuple | None = None,
+        eval_loader = None,
+        qubit_idx: int = 0,
     ):
         # --- arg checks --------------------------------------------------
         if task not in {"regression", "classification"}:
@@ -147,6 +151,10 @@ class SimpleTransformerEstimator:
         self.freeze_pretrained = freeze_pretrained
         self.verbose = verbose
         self.seq_len = seq_len
+        self.wandb_logging = wandb_logging
+        self.eval_data = eval_data  # (X_eval, y_eval) tuple for evaluation
+        self.eval_loader = eval_loader  # DataLoader for evaluation
+        self.qubit_idx = qubit_idx  # which qubit this model is for
         self.device = torch.device(
             device if device is not None else ("cuda" if torch.cuda.is_available() else "cpu")
         )
@@ -265,15 +273,82 @@ class SimpleTransformerEstimator:
                     scheduler.step()
             # ------------------------
 
+            # Calculate average loss for this epoch
+            avg_epoch_loss = epoch_loss / len(dataset)
+
+            # ---- Wandb logging ----
+            if self.wandb_logging:
+                log_dict = {
+                    f"train_loss_q{self.qubit_idx}": avg_epoch_loss,
+                    f"learning_rate_q{self.qubit_idx}": optimizer.param_groups[0]["lr"],
+                    "epoch": epoch + 1
+                }
+                
+                # Evaluate on test set if provided
+                if self.eval_data is not None:
+                    eval_metrics = self._evaluate_model()
+                    log_dict.update(eval_metrics)
+                
+                # Import wandb here to avoid dependency issues if not used
+                try:
+                    import wandb
+                    wandb.log(log_dict)
+                except ImportError:
+                    if self.verbose:
+                        print("Warning: wandb not installed, skipping logging")
+            # ------------------------
+
             if self.verbose and (
                 epoch % max(self.n_epochs // 10, 1) == 0 or epoch == self.n_epochs - 1
             ):
                 current_lr = optimizer.param_groups[0]["lr"]
                 print(
                     f"Epoch {epoch + 1}/{self.n_epochs} | "
-                    f"loss={epoch_loss / len(dataset):.4f} | lr={current_lr:.2e}"
+                    f"loss={avg_epoch_loss:.4f} | lr={current_lr:.2e}"
                 )
         return self
+
+    def _evaluate_model(self):
+        """Evaluate the model on the provided evaluation data."""
+        if self.eval_data is None:
+            return {}
+        
+        X_eval, y_eval = self.eval_data
+        predictions = self.predict(X_eval)
+        
+        # Calculate evaluation metrics for this qubit
+        eval_metrics = {}
+        
+        # Convert to numpy arrays if needed
+        if hasattr(y_eval, 'values'):
+            y_eval = y_eval.values.flatten()
+        elif hasattr(y_eval, 'tolist'):
+            y_eval = np.array(y_eval.tolist()).flatten()
+        else:
+            y_eval = np.array(y_eval).flatten()
+            
+        predictions = np.array(predictions).flatten()
+        
+        # Calculate metrics similar to evaluate_loader function
+        # Assume the last 5 columns of X_eval are noisy values
+        if hasattr(X_eval, 'values'):
+            noisy_vals = X_eval.values[:, -5 + self.qubit_idx]  # Get noisy values for this qubit
+        else:
+            noisy_vals = X_eval[:, -5 + self.qubit_idx]
+            
+        # Calculate distances and squared distances
+        dist_input = np.abs(y_eval - noisy_vals)
+        dist_mitigated = np.abs(y_eval - predictions)
+        dist_sq_input = np.square(y_eval - noisy_vals)
+        dist_sq_mitigated = np.square(y_eval - predictions)
+        
+        # Calculate mean metrics
+        eval_metrics[f"eval_dist_q{self.qubit_idx}"] = np.mean(dist_input)
+        eval_metrics[f"eval_dist_mitigated_q{self.qubit_idx}"] = np.mean(dist_mitigated)
+        eval_metrics[f"eval_rmse_input_q{self.qubit_idx}"] = np.sqrt(np.mean(dist_sq_input))
+        eval_metrics[f"eval_rmse_mitigated_q{self.qubit_idx}"] = np.sqrt(np.mean(dist_sq_mitigated))
+        
+        return eval_metrics
 
     @torch.no_grad()
     def predict(self, X):
