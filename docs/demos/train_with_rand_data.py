@@ -443,7 +443,7 @@ few_normal_y_test = pd.DataFrame(few_normal_y_test)
 #                                    seq_len=682)
 # model.fit(X_train, y_train)
 
-number_of_epochs = 1000
+number_of_epochs = 10
 number_heads = 4
 model_depth = 64
 
@@ -471,7 +471,7 @@ for q in range(5):
                                        verbose=False,
                                        device=device,
                                        lr_scheduler='step',
-                                       step_size=30,
+                                       step_size=300,
                                        pretrained_path=f'pretrained_q{q}.pt',
                                        seq_len=682,
                                        wandb_logging=WANDB_AVAILABLE,
