@@ -492,7 +492,7 @@ for q in range(5):
     model.fit(few_X_train, few_y_train.iloc[:, q])
     
     # Save model locally and as wandb artifact
-    local_path = f"clip_transformer_q{q}_{timestamp}_epoch{number_of_epochs}.pt"
+    local_path = f"~/Desktop/clip_transformer_q{q}_{timestamp}_epoch{number_of_epochs}.pt"
     artifact_name = f"clip_transformer_q{q}_{timestamp}"
     model.save(local_path, wandb_artifact_name=artifact_name)
     
@@ -548,7 +548,7 @@ for q in range(5):
     model.fit(few_normal_X_train, few_normal_y_train.iloc[:, q])
     
     # Save model locally and as wandb artifact
-    local_path = f"regular_transformer_q{q}_{timestamp_regular}_epoch{number_of_epochs}.pt"
+    local_path = f"~/Desktop/regular_transformer_q{q}_{timestamp_regular}_epoch{number_of_epochs}.pt"
     artifact_name = f"regular_transformer_q{q}_{timestamp_regular}"
     model.save(local_path, wandb_artifact_name=artifact_name)
     
