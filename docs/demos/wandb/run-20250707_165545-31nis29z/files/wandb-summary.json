@@ -1,0 +1,1 @@
+{"_step":10,"_runtime":3,"final_test_rmse":0.957843556337864,"epoch":10,"eval_rmse_mitigated_q0":0.957843556337864,"eval_rmse_input_q0":1.0725569454103547,"_wandb":{"runtime":3},"_timestamp":1.7519253513553042e+09,"train_loss_q0":0.7515521335601807,"eval_dist_mitigated_q0":0.7743052633682364,"eval_dist_q0":0.8449581019985868,"learning_rate_q0":0.001}

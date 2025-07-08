@@ -1,0 +1,40 @@
+{
+  "os":  "Linux-5.15.0-142-generic-x86_64-with-glibc2.35",
+  "python":  "CPython 3.9.23",
+  "startedAt":  "2025-07-07T22:00:04.765294Z",
+  "program":  "/home/macula/SMATousi/projects/quantum/vigir-ml-qem/docs/demos/train_with_rand_data.py",
+  "codePath":  "docs/demos/train_with_rand_data.py",
+  "codePathLocal":  "train_with_rand_data.py",
+  "git":  {
+    "remote":  "git@github.com:SMATousi/vigir-ml-qem.git",
+    "commit":  "8af3cf57323a8865437e3b6877a02d308a7a6716"
+  },
+  "email":  "stmmc@umsystem.edu",
+  "root":  "/home/macula/SMATousi/projects/quantum/vigir-ml-qem/docs/demos",
+  "host":  "fovea",
+  "executable":  "/home/macula/SMATousi/.conda/envs/mlqem/bin/python",
+  "cpu_count":  16,
+  "cpu_count_logical":  24,
+  "gpu":  "NVIDIA GeForce RTX 3090",
+  "gpu_count":  1,
+  "disk":  {
+    "/":  {
+      "total":  "942791233536",
+      "used":  "518461059072"
+    }
+  },
+  "memory":  {
+    "total":  "33323024384"
+  },
+  "gpu_nvidia":  [
+    {
+      "name":  "NVIDIA GeForce RTX 3090",
+      "memoryTotal":  "25769803776",
+      "cudaCores":  10496,
+      "architecture":  "Ampere",
+      "uuid":  "GPU-6a64f5bf-93e0-371c-8369-18a31ba10403"
+    }
+  ],
+  "cudaVersion":  "12.8",
+  "writerId":  "cs2ltnibdhcx84mpxx91xzfakmqkr4co"
+}

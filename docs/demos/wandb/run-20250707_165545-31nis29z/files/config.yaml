@@ -1,0 +1,57 @@
+_wandb:
+    value:
+        cli_version: 0.21.0
+        e:
+            ay63dsnv644ftbdam3se0xjuwdt3a2me:
+                codePath: docs/demos/test_wandb_integration.py
+                codePathLocal: test_wandb_integration.py
+                cpu_count: 16
+                cpu_count_logical: 24
+                cudaVersion: "12.8"
+                disk:
+                    /:
+                        total: "942791233536"
+                        used: "518461038592"
+                email: stmmc@umsystem.edu
+                executable: /home/macula/SMATousi/.conda/envs/mlqem/bin/python
+                git:
+                    commit: 8af3cf57323a8865437e3b6877a02d308a7a6716
+                    remote: git@github.com:SMATousi/vigir-ml-qem.git
+                gpu: NVIDIA GeForce RTX 3090
+                gpu_count: 1
+                gpu_nvidia:
+                    - architecture: Ampere
+                      cudaCores: 10496
+                      memoryTotal: "25769803776"
+                      name: NVIDIA GeForce RTX 3090
+                      uuid: GPU-6a64f5bf-93e0-371c-8369-18a31ba10403
+                host: fovea
+                memory:
+                    total: "33323024384"
+                os: Linux-5.15.0-142-generic-x86_64-with-glibc2.35
+                program: /home/macula/SMATousi/projects/quantum/vigir-ml-qem/docs/demos/test_wandb_integration.py
+                python: CPython 3.9.23
+                root: /home/macula/SMATousi/projects/quantum/vigir-ml-qem/docs/demos
+                startedAt: "2025-07-07T21:55:45.784780Z"
+                writerId: ay63dsnv644ftbdam3se0xjuwdt3a2me
+        m: []
+        python_version: 3.9.23
+        t:
+            "1":
+                - 1
+            "2":
+                - 1
+            "3":
+                - 2
+                - 13
+                - 16
+            "4": 3.9.23
+            "5": 0.21.0
+            "12": 0.21.0
+            "13": linux-x86_64
+model_type:
+    value: test
+n_epochs:
+    value: 10
+seq_len:
+    value: 170

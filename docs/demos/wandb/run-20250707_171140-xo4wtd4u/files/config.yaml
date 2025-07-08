@@ -1,0 +1,74 @@
+_wandb:
+    value:
+        cli_version: 0.21.0
+        e:
+            qitsmyfxklj5o23lht89ll4i573siv6d:
+                codePath: docs/demos/train_with_rand_data.py
+                codePathLocal: train_with_rand_data.py
+                cpu_count: 16
+                cpu_count_logical: 24
+                cudaVersion: "12.8"
+                disk:
+                    /:
+                        total: "942791233536"
+                        used: "518461050880"
+                email: stmmc@umsystem.edu
+                executable: /home/macula/SMATousi/.conda/envs/mlqem/bin/python
+                git:
+                    commit: df020593767afd94e9543202c5d94ef67c288a19
+                    remote: git@github.com:SMATousi/vigir-ml-qem.git
+                gpu: NVIDIA GeForce RTX 3090
+                gpu_count: 1
+                gpu_nvidia:
+                    - architecture: Ampere
+                      cudaCores: 10496
+                      memoryTotal: "25769803776"
+                      name: NVIDIA GeForce RTX 3090
+                      uuid: GPU-6a64f5bf-93e0-371c-8369-18a31ba10403
+                host: fovea
+                memory:
+                    total: "33323024384"
+                os: Linux-5.15.0-142-generic-x86_64-with-glibc2.35
+                program: /home/macula/SMATousi/projects/quantum/vigir-ml-qem/docs/demos/train_with_rand_data.py
+                python: CPython 3.9.23
+                root: /home/macula/SMATousi/projects/quantum/vigir-ml-qem/docs/demos
+                startedAt: "2025-07-07T22:11:40.022823Z"
+                writerId: qitsmyfxklj5o23lht89ll4i573siv6d
+        m: []
+        python_version: 3.9.23
+        t:
+            "1":
+                - 1
+                - 5
+                - 53
+            "2":
+                - 1
+                - 5
+                - 53
+            "3":
+                - 13
+                - 16
+            "4": 3.9.23
+            "5": 0.21.0
+            "12": 0.21.0
+            "13": linux-x86_64
+lr:
+    value: 0.001
+lr_scheduler:
+    value: step
+model_depth:
+    value: 64
+model_type:
+    value: CLIP+Transformer
+n_epochs:
+    value: 5
+n_heads:
+    value: 4
+n_qubits:
+    value: 5
+seq_len:
+    value: 682
+step_size:
+    value: 300
+timestamp:
+    value: "20250707_171139"
