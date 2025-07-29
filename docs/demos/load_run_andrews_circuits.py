@@ -132,7 +132,7 @@ def simulate_and_store_z_expectations_json(
 
 
 simulate_and_store_z_expectations_json(
-    qpy_folder="/home/alitousi/projects/quantum/ExecutionResults/StoredCircuits/",
+    qpy_folder="/home/macula/SMATousi/projects/quantum/andrew/ExecutionResults/StoredCircuits/",
     output_json_path="z_expectations.json",
     shots=1024
 )
