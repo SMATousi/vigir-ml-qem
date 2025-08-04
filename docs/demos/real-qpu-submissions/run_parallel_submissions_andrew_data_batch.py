@@ -110,9 +110,10 @@ def simulate_and_store_z_expectations_real_qpu_json(
 
         for idx, qc in enumerate(circuits):
             n_qubits = qc.num_qubits
-            circuit_key = unique_key(qc.name, f"{Path(file).stem}_{idx}", taken_names)
-            safe_key = sanitize(circuit_key)
-
+            #circuit_key = unique_key(qc.name, f"{Path(file).stem}_{idx}", taken_names)
+            #safe_key = sanitize(circuit_key)
+            circuit_key = file
+            safe_key = file
             # === Ideal Aer run ===
             qc_ideal = qc.copy()
             if not has_measurements(qc_ideal):

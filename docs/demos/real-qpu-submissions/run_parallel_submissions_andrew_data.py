@@ -267,7 +267,7 @@ def simulate_and_store_z_expectations_real_qpu_json(
 simulate_and_store_z_expectations_real_qpu_json(
     qpy_folder="/home/macula/SMATousi/projects/quantum/andrew/ExecutionResults/StoredCircuits/",
     output_json_path="real_z_expectations.json",
-    shots=1024,
+    shots=10,
     per_circuit_timeout_s=14400
     # service=service
 )
