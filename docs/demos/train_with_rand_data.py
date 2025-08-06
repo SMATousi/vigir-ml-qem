@@ -466,16 +466,14 @@ print("Evaluating Random Forest baseline...")
 rf_results = evaluate_loader(test_loader, normal_rfr_tree_list, label="RandomForest_Baseline")
 rf_df = pd.DataFrame(rf_results)
 
-# Calculate RF baseline metrics
+# Calculate RF baseline metrics to match transformer evaluation metrics exactly
 rf_baseline_metrics = {}
 for q in range(5):
-    rmse_input = np.sqrt(rf_df[f"dist_sq_{q}"].mean())
-    rmse_mitigated = np.sqrt(rf_df[f"dist_sq_mitigated_{q}"].mean())
-    
-    rf_baseline_metrics[f"rmse_input_q{q}"] = rmse_input
-    rf_baseline_metrics[f"rmse_mitigated_q{q}"] = rmse_mitigated
-    rf_baseline_metrics[f"mean_dist_sq_q{q}"] = rf_df[f"dist_sq_{q}"].mean()
-    rf_baseline_metrics[f"mean_dist_sq_mitigated_q{q}"] = rf_df[f"dist_sq_mitigated_{q}"].mean()
+    # Match the exact metric names from SimpleTransformerEstimator._evaluate_model
+    rf_baseline_metrics[f"eval_dist_q{q}"] = rf_df[f"dist_{q}"].mean()
+    rf_baseline_metrics[f"eval_dist_mitigated_q{q}"] = rf_df[f"dist_mitigated_{q}"].mean()
+    rf_baseline_metrics[f"eval_rmse_input_q{q}"] = np.sqrt(rf_df[f"dist_sq_{q}"].mean())
+    rf_baseline_metrics[f"eval_rmse_mitigated_q{q}"] = np.sqrt(rf_df[f"dist_sq_mitigated_{q}"].mean())
 
 # Overall RF baseline metrics
 rf_baseline_metrics["overall_rmse_input"] = np.sqrt(np.mean([rf_df[f"dist_sq_{q}"].mean() for q in range(5)]))
