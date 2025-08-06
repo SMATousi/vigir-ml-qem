@@ -552,7 +552,7 @@ for q in range(5):
                                                    device=device,
                                                    lr_scheduler='step',
                                                    step_size=300,
-                                                   pretrained_path=f'pretrained_q{q}.pt',
+                                                #    pretrained_path=f'pretrained_q{q}.pt',
                                                    seq_len=682,
                                                    wandb_logging=WANDB_AVAILABLE,
                                                    eval_data=(X_test, y_test.iloc[:, q]),
