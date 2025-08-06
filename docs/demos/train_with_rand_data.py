@@ -517,7 +517,7 @@ print(f"Random Forest Baseline - Overall RMSE Input: {rf_baseline_metrics['rf_ba
     
 
 number_of_epochs = 1000
-number_heads = 2
+number_heads = 1
 model_depth = 8
 
 # Create timestamp for this training run
