@@ -386,6 +386,11 @@ def evaluate_loader(test_loader, model_list, label: str, n_qbits=5):
 # plt.savefig("Normal-vs-CLIP-RandomForests.png")
 # plt.show()
 
+number_of_epochs = 1000
+number_heads = 1
+model_depth = 8
+
+
 import numpy as np
 from sklearn.model_selection import train_test_split
 
@@ -504,9 +509,7 @@ if WANDB_AVAILABLE:
     print("RF baseline logging completed.")
     
 
-number_of_epochs = 1000
-number_heads = 1
-model_depth = 8
+
 
 # Create timestamp for this training run
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
