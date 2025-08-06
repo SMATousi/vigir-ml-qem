@@ -404,43 +404,6 @@ import simple_transformer
 reload(simple_transformer)
 from simple_transformer import SimpleTransformerEstimator
 
-# Custom wrapper to include RF baseline metrics in wandb logging
-class SimpleTransformerEstimatorWithBaseline(SimpleTransformerEstimator):
-    def __init__(self, *args, rf_baseline_metrics=None, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.rf_baseline_metrics = rf_baseline_metrics or {}
-    
-    def fit(self, X, y):
-        """Override fit to include RF baseline metrics in wandb logging."""
-        # Store original wandb logging state
-        original_wandb_logging = self.wandb_logging
-        
-        # If wandb logging is enabled and we have baseline metrics, customize logging
-        if original_wandb_logging and self.rf_baseline_metrics:
-            # Monkey patch the wandb logging in the parent fit method
-            import wandb
-            original_wandb_log = wandb.log
-            
-            def custom_wandb_log(log_dict, *args, **kwargs):
-                # Add RF baseline metrics to every log
-                enhanced_log_dict = {**log_dict, **self.rf_baseline_metrics}
-                return original_wandb_log(enhanced_log_dict, *args, **kwargs)
-            
-            # Temporarily replace wandb.log
-            wandb.log = custom_wandb_log
-            
-            try:
-                # Call parent fit method
-                result = super().fit(X, y)
-            finally:
-                # Restore original wandb.log
-                wandb.log = original_wandb_log
-                
-            return result
-        else:
-            # No custom logging needed, use parent method
-            return super().fit(X, y)
-
 # Import wandb for logging
 try:
     import wandb
@@ -483,7 +446,7 @@ few_normal_y_test = pd.DataFrame(few_normal_y_test)
 #                                    seq_len=682)
 # model.fit(X_train, y_train)
 
-# Random Forest Baseline Training (moved to beginning for baseline comparison)
+# Random Forest Baseline Training
 print("Training Random Forest baseline models...")
 normal_rfr_tree_list = []
 for q in range(5):
@@ -493,27 +456,52 @@ for q in range(5):
     normal_rfr_tree_list.append(rfr)
     print(f"Done with the {q} model")
 
-# Evaluate Random Forest baseline and store metrics for epoch-by-epoch logging
+# Evaluate Random Forest baseline
 print("Evaluating Random Forest baseline...")
 rf_results = evaluate_loader(test_loader, normal_rfr_tree_list, label="RandomForest_Baseline")
 rf_df = pd.DataFrame(rf_results)
 
-# Store RF baseline metrics to be logged during transformer training
+# Calculate RF baseline metrics
 rf_baseline_metrics = {}
 for q in range(5):
     rmse_input = np.sqrt(rf_df[f"dist_sq_{q}"].mean())
     rmse_mitigated = np.sqrt(rf_df[f"dist_sq_mitigated_{q}"].mean())
     
-    rf_baseline_metrics[f"rf_baseline_rmse_input_q{q}"] = rmse_input
-    rf_baseline_metrics[f"rf_baseline_rmse_mitigated_q{q}"] = rmse_mitigated
-    rf_baseline_metrics[f"rf_baseline_mean_dist_sq_q{q}"] = rf_df[f"dist_sq_{q}"].mean()
-    rf_baseline_metrics[f"rf_baseline_mean_dist_sq_mitigated_q{q}"] = rf_df[f"dist_sq_mitigated_{q}"].mean()
+    rf_baseline_metrics[f"rmse_input_q{q}"] = rmse_input
+    rf_baseline_metrics[f"rmse_mitigated_q{q}"] = rmse_mitigated
+    rf_baseline_metrics[f"mean_dist_sq_q{q}"] = rf_df[f"dist_sq_{q}"].mean()
+    rf_baseline_metrics[f"mean_dist_sq_mitigated_q{q}"] = rf_df[f"dist_sq_mitigated_{q}"].mean()
 
 # Overall RF baseline metrics
-rf_baseline_metrics["rf_baseline_overall_rmse_input"] = np.sqrt(np.mean([rf_df[f"dist_sq_{q}"].mean() for q in range(5)]))
-rf_baseline_metrics["rf_baseline_overall_rmse_mitigated"] = np.sqrt(np.mean([rf_df[f"dist_sq_mitigated_{q}"].mean() for q in range(5)]))
+rf_baseline_metrics["overall_rmse_input"] = np.sqrt(np.mean([rf_df[f"dist_sq_{q}"].mean() for q in range(5)]))
+rf_baseline_metrics["overall_rmse_mitigated"] = np.sqrt(np.mean([rf_df[f"dist_sq_mitigated_{q}"].mean() for q in range(5)]))
 
-print(f"Random Forest Baseline - Overall RMSE Input: {rf_baseline_metrics['rf_baseline_overall_rmse_input']:.4f}, RMSE Mitigated: {rf_baseline_metrics['rf_baseline_overall_rmse_mitigated']:.4f}")
+print(f"Random Forest Baseline - Overall RMSE Input: {rf_baseline_metrics['overall_rmse_input']:.4f}, RMSE Mitigated: {rf_baseline_metrics['overall_rmse_mitigated']:.4f}")
+
+# Create separate wandb run for RF baseline that logs to same figures as transformer training
+if WANDB_AVAILABLE:
+    timestamp_rf = datetime.now().strftime("%Y%m%d_%H%M%S")
+    wandb.init(project="vigir-ml-qem", 
+               name=f"RandomForest_Baseline_{timestamp_rf}",
+               config={
+                   "n_estimators": 100,
+                   "model_type": "RandomForest_Baseline",
+                   "data_type": "few_shot",
+                   "n_jobs": -1,
+                   "timestamp": timestamp_rf,
+                   "n_qubits": 5,
+                   "n_epochs": number_of_epochs
+               })
+    
+    # Log RF baseline metrics for each epoch to create flat baseline lines
+    print("Logging RF baseline metrics for all epochs...")
+    for epoch in range(number_of_epochs):
+        log_dict = {"epoch": epoch}
+        log_dict.update(rf_baseline_metrics)
+        wandb.log(log_dict)
+    
+    wandb.finish()
+    print("RF baseline logging completed.")
     
 
 number_of_epochs = 1000
@@ -544,20 +532,19 @@ trained_transformer_list_with_CLIP = []
 for q in range(5):
     print(f"Training CLIP+Transformer model for qubit {q}...")
     
-    model = SimpleTransformerEstimatorWithBaseline(n_epochs=number_of_epochs, 
-                                                   nhead=number_heads,
-                                                   d_model=model_depth,
-                                                   lr=0.001,
-                                                   verbose=False,
-                                                   device=device,
-                                                   lr_scheduler='step',
-                                                   step_size=300,
-                                                #    pretrained_path=f'pretrained_q{q}.pt',
-                                                   seq_len=682,
-                                                   wandb_logging=WANDB_AVAILABLE,
-                                                   eval_data=(X_test, y_test.iloc[:, q]),
-                                                   qubit_idx=q,
-                                                   rf_baseline_metrics=rf_baseline_metrics)
+    model = SimpleTransformerEstimator(n_epochs=number_of_epochs, 
+                                       nhead=number_heads,
+                                       d_model=model_depth,
+                                       lr=0.001,
+                                       verbose=False,
+                                       device=device,
+                                       lr_scheduler='step',
+                                       step_size=300,
+                                    #    pretrained_path=f'pretrained_q{q}.pt',
+                                       seq_len=682,
+                                       wandb_logging=WANDB_AVAILABLE,
+                                       eval_data=(X_test, y_test.iloc[:, q]),
+                                       qubit_idx=q)
     
     # model.fit(X_train, y_train.iloc[:, q])
     model.fit(few_X_train, few_y_train.iloc[:, q])
@@ -601,20 +588,19 @@ trained_transformer_list = []
 for q in range(5):
     print(f"Training regular Transformer model for qubit {q}...")
     
-    model = SimpleTransformerEstimatorWithBaseline(n_epochs=number_of_epochs, 
-                                                   nhead=number_heads,
-                                                   d_model=model_depth,
-                                                   lr=0.001,
-                                                   verbose=False,
-                                                   device=device,
-                                                   lr_scheduler='step',
-                                                   step_size=30,
-                                                   batch_size=16,
-                                                   seq_len=170,
-                                                   wandb_logging=WANDB_AVAILABLE,
-                                                   eval_data=(normal_X_test, normal_y_test.iloc[:, q]),
-                                                   qubit_idx=q,
-                                                   rf_baseline_metrics=rf_baseline_metrics)
+    model = SimpleTransformerEstimator(n_epochs=number_of_epochs, 
+                                       nhead=number_heads,
+                                       d_model=model_depth,
+                                       lr=0.001,
+                                       verbose=False,
+                                       device=device,
+                                       lr_scheduler='step',
+                                       step_size=30,
+                                       batch_size=16,
+                                       seq_len=170,
+                                       wandb_logging=WANDB_AVAILABLE,
+                                       eval_data=(normal_X_test, normal_y_test.iloc[:, q]),
+                                       qubit_idx=q)
     
     # model.fit(normal_X_train, normal_y_train.iloc[:, q])
     model.fit(few_normal_X_train, few_normal_y_train.iloc[:, q])
