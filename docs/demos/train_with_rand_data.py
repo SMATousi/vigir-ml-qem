@@ -243,7 +243,7 @@ few_normal_X_test = pd.DataFrame(few_normal_X_test)
 few_normal_y_test = pd.DataFrame(few_normal_y_test)
 
 
-# from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 # rfr_tree_list = []
 # for q in range(5):
 #     rfr = RandomForestRegressor(n_estimators=500, verbose=1, n_jobs=-1)
@@ -446,9 +446,68 @@ few_normal_y_test = pd.DataFrame(few_normal_y_test)
 #                                    seq_len=682)
 # model.fit(X_train, y_train)
 
+# Random Forest Baseline Training
+# Create timestamp for RF baseline training
+timestamp_rf = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+# Initialize wandb for Random Forest baseline training
+if WANDB_AVAILABLE:
+    wandb.init(project="vigir-ml-qem", 
+               name=f"RandomForest_Baseline_{timestamp_rf}",
+               config={
+                   "n_estimators": 100,
+                   "model_type": "RandomForest_Baseline",
+                   "data_type": "few_shot",
+                   "n_jobs": -1,
+                   "timestamp": timestamp_rf,
+                   "n_qubits": 5
+               })
+
+normal_rfr_tree_list = []
+for q in range(5):
+    print(f"Training Random Forest baseline model for qubit {q}...")
+    rfr = RandomForestRegressor(n_estimators=100, verbose=0, n_jobs=-1)
+    rfr.fit(few_X_train, few_y_train.iloc[:, q])
+    normal_rfr_tree_list.append(rfr)
+    print(f"Done with the {q} model")
+
+# Evaluate Random Forest baseline and log to wandb
+if WANDB_AVAILABLE:
+    print("Evaluating Random Forest baseline...")
+    rf_results = evaluate_loader(test_loader, normal_rfr_tree_list, label="RandomForest_Baseline")
+    
+    # Calculate metrics for wandb logging
+    rf_df = pd.DataFrame(rf_results)
+    
+    # Log individual qubit metrics
+    for q in range(5):
+        rmse_input = np.sqrt(rf_df[f"dist_sq_{q}"].mean())
+        rmse_mitigated = np.sqrt(rf_df[f"dist_sq_mitigated_{q}"].mean())
+        
+        wandb.log({
+            f"rf_rmse_input_q{q}": rmse_input,
+            f"rf_rmse_mitigated_q{q}": rmse_mitigated,
+            f"rf_mean_dist_sq_q{q}": rf_df[f"dist_sq_{q}"].mean(),
+            f"rf_mean_dist_sq_mitigated_q{q}": rf_df[f"dist_sq_mitigated_{q}"].mean()
+        })
+    
+    # Log overall metrics
+    overall_rmse_input = np.sqrt(np.mean([rf_df[f"dist_sq_{q}"].mean() for q in range(5)]))
+    overall_rmse_mitigated = np.sqrt(np.mean([rf_df[f"dist_sq_mitigated_{q}"].mean() for q in range(5)]))
+    
+    wandb.log({
+        "rf_overall_rmse_input": overall_rmse_input,
+        "rf_overall_rmse_mitigated": overall_rmse_mitigated
+    })
+    
+    print(f"Random Forest Baseline - Overall RMSE Input: {overall_rmse_input:.4f}, RMSE Mitigated: {overall_rmse_mitigated:.4f}")
+    
+    wandb.finish()
+    
+
 number_of_epochs = 1000
-number_heads = 4
-model_depth = 64
+number_heads = 2
+model_depth = 8
 
 # Create timestamp for this training run
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -456,7 +515,7 @@ timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 # Initialize wandb for CLIP+Transformer training
 if WANDB_AVAILABLE:
     wandb.init(project="vigir-ml-qem", 
-               name=f"CLIP_Transformer_Training_{timestamp}",
+               name=f"CLIP_Transformer_Training_{timestamp}_{number_heads}_{model_depth}",
                config={
                    "n_epochs": number_of_epochs,
                    "n_heads": number_heads,
@@ -488,7 +547,7 @@ for q in range(5):
                                        eval_data=(X_test, y_test.iloc[:, q]),
                                        qubit_idx=q)
     
-    model.fit(X_train, y_train.iloc[:, q])
+    # model.fit(X_train, y_train.iloc[:, q])
     model.fit(few_X_train, few_y_train.iloc[:, q])
     
     # Save model locally and as wandb artifact
@@ -512,7 +571,7 @@ timestamp_regular = datetime.now().strftime("%Y%m%d_%H%M%S")
 
 if WANDB_AVAILABLE:
     wandb.init(project="vigir-ml-qem", 
-               name=f"Regular_Transformer_Training_{timestamp_regular}",
+               name=f"Regular_Transformer_Training_{timestamp_regular}_{number_heads}_{model_depth}",
                config={
                    "n_epochs": number_of_epochs,
                    "n_heads": number_heads, 
@@ -544,7 +603,7 @@ for q in range(5):
                                        eval_data=(normal_X_test, normal_y_test.iloc[:, q]),
                                        qubit_idx=q)
     
-    model.fit(normal_X_train, normal_y_train.iloc[:, q])
+    # model.fit(normal_X_train, normal_y_train.iloc[:, q])
     model.fit(few_normal_X_train, few_normal_y_train.iloc[:, q])
     
     # Save model locally and as wandb artifact
