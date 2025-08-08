@@ -1,0 +1,21 @@
+{
+  "input_dir": "PATH/TO/CIRCUITS",
+  "split": "train",
+  "output_path": "graphs_train.pt",
+  "measured_qubits": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "measured_map_json": null,
+  "max_params": 2,
+  "verbose": true,
+  "file_extensions": [
+    ".qpy",
+    ".qasm",
+    ".pk",
+    ".pickle"
+  ]
+}
