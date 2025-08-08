@@ -13,11 +13,15 @@ def load_graphs(graphs_pt_path: str) -> List[Data]:
 def attach_labels_and_noisy(graphs: List[Data], labels_csv: str, noisy_col="noisy_z_json", target_col="target_y_json") -> Tuple[List[Data], int]:
     df = pd.read_csv(labels_csv)
     by_path = {row["circuit_path"]: row for _, row in df.iterrows()}
+    # print(by_path)
     M_ref = None
     matched = 0
     for g in graphs:
         path = g.circuit_path if isinstance(g.circuit_path, str) else g.circuit_path[0]
+        path = path[:-4]
+        # print("The circuit path = ", path)
         row = by_path.get(path)
+        # print("The CSV circuit path = ", path)
         if row is None:
             continue
         noisy = torch.tensor(json.loads(row[noisy_col]), dtype=torch.float32)
