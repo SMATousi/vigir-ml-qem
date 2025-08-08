@@ -6,7 +6,7 @@ from torch_geometric.data import Data
 from torch_geometric.loader import DataLoader
 
 def load_graphs(graphs_pt_path: str) -> List[Data]:
-    graphs = torch.load(graphs_pt_path)
+    graphs = torch.load(graphs_pt_path, weights_only=False)
     assert isinstance(graphs, list) and all(isinstance(g, Data) for g in graphs), "Expected list[Data]"
     return graphs
 
