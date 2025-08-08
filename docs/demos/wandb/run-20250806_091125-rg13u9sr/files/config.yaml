@@ -1,0 +1,67 @@
+_wandb:
+    value:
+        cli_version: 0.21.0
+        e:
+            obn7vz7oz3t84iu7d326elgvg45gnmfp:
+                codePath: docs/demos/train_with_rand_data.py
+                codePathLocal: train_with_rand_data.py
+                cpu_count: 16
+                cpu_count_logical: 24
+                cudaVersion: "12.8"
+                disk:
+                    /:
+                        total: "942791233536"
+                        used: "616605003776"
+                email: stmmc@umsystem.edu
+                executable: /home/macula/SMATousi/.conda/envs/mlqem-old-version/bin/python
+                git:
+                    commit: 25602e181677d1ae8f3772ed7abfcd809555e95b
+                    remote: git@github.com:SMATousi/vigir-ml-qem.git
+                gpu: NVIDIA GeForce RTX 3090
+                gpu_count: 1
+                gpu_nvidia:
+                    - architecture: Ampere
+                      cudaCores: 10496
+                      memoryTotal: "25769803776"
+                      name: NVIDIA GeForce RTX 3090
+                      uuid: GPU-6a64f5bf-93e0-371c-8369-18a31ba10403
+                host: fovea
+                memory:
+                    total: "33323024384"
+                os: Linux-5.15.0-142-generic-x86_64-with-glibc2.35
+                program: /home/macula/SMATousi/projects/quantum/vigir-ml-qem/docs/demos/train_with_rand_data.py
+                python: CPython 3.9.23
+                root: /home/macula/SMATousi/projects/quantum/vigir-ml-qem/docs/demos
+                startedAt: "2025-08-06T14:11:25.431286Z"
+                writerId: obn7vz7oz3t84iu7d326elgvg45gnmfp
+        m: []
+        python_version: 3.9.23
+        t:
+            "1":
+                - 1
+                - 5
+                - 53
+            "2":
+                - 1
+                - 5
+                - 53
+            "3":
+                - 2
+                - 13
+                - 16
+            "4": 3.9.23
+            "5": 0.21.0
+            "12": 0.21.0
+            "13": linux-x86_64
+data_type:
+    value: few_shot
+model_type:
+    value: RandomForest_Baseline
+n_estimators:
+    value: 100
+n_jobs:
+    value: -1
+n_qubits:
+    value: 5
+timestamp:
+    value: "20250806_091125"

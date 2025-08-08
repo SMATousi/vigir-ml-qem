@@ -1,0 +1,2537 @@
+{
+  "study_name": "clip_transformer_qem_optimization",
+  "direction": "MINIMIZE",
+  "n_trials": 100,
+  "n_complete_trials": 100,
+  "n_pruned_trials": 0,
+  "n_failed_trials": 0,
+  "datetime_start": "2025-08-06T15:06:57.579249",
+  "datetime_complete": "2025-08-06T16:06:51.026310",
+  "best_trial": {
+    "number": 53,
+    "value": 0.060823026299476626,
+    "params": {
+      "d_model": 256,
+      "nhead": 4,
+      "dim_feedforward": 64,
+      "lr": 0.0002927578303285579,
+      "weight_decay": 8.235910722532219e-06,
+      "batch_size": 32,
+      "n_epochs": 131,
+      "use_scheduler": false
+    },
+    "user_attrs": {
+      "rmse_q0": 0.08860911428928375,
+      "rmse_q1": 0.044887468218803406,
+      "rmse_q2": 0.06365697830915451,
+      "rmse_q3": 0.12276695668697357,
+      "rmse_q4": 0.042491331696510315
+    },
+    "datetime_start": "2025-08-06T15:40:43.037140",
+    "datetime_complete": "2025-08-06T15:41:15.012453",
+    "duration": "0:00:31.975313",
+    "state": "COMPLETE"
+  },
+  "trials": [
+    {
+      "number": 0,
+      "value": 0.16451849937438964,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 512,
+        "lr": 1.6180969001750876e-05,
+        "weight_decay": 3.8073987390598212e-06,
+        "batch_size": 16,
+        "n_epochs": 120,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2431495636701584,
+        "rmse_q1": 0.24929025769233704,
+        "rmse_q2": 0.26148462295532227,
+        "rmse_q3": 0.2563279867172241,
+        "rmse_q4": 0.24747933447360992
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:06:57.579249",
+      "datetime_complete": "2025-08-06T15:07:33.878808",
+      "duration": "0:00:36.299559"
+    },
+    {
+      "number": 1,
+      "value": 0.16219415366649628,
+      "params": {
+        "d_model": 32,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 9.99814597607757e-05,
+        "weight_decay": 9.362908721493896e-06,
+        "batch_size": 16,
+        "n_epochs": 249,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.25213125348091125,
+        "rmse_q1": 0.25039973855018616,
+        "rmse_q2": 0.2474089413881302,
+        "rmse_q3": 0.25866225361824036,
+        "rmse_q4": 0.25328701734542847
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:07:33.879438",
+      "datetime_complete": "2025-08-06T15:08:07.131501",
+      "duration": "0:00:33.252063"
+    },
+    {
+      "number": 2,
+      "value": 0.18167767822742462,
+      "params": {
+        "d_model": 128,
+        "nhead": 1,
+        "dim_feedforward": 512,
+        "lr": 4.528516483720306e-05,
+        "weight_decay": 0.0001961643174730568,
+        "batch_size": 64,
+        "n_epochs": 300,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2508675158023834,
+        "rmse_q1": 0.26234889030456543,
+        "rmse_q2": 0.2534380257129669,
+        "rmse_q3": 0.2552941143512726,
+        "rmse_q4": 0.2534645199775696
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:08:07.132097",
+      "datetime_complete": "2025-08-06T15:08:45.715553",
+      "duration": "0:00:38.583456"
+    },
+    {
+      "number": 3,
+      "value": 0.18146692514419555,
+      "params": {
+        "d_model": 128,
+        "nhead": 4,
+        "dim_feedforward": 128,
+        "lr": 0.00010139355365451055,
+        "weight_decay": 0.00044945791341979884,
+        "batch_size": 128,
+        "n_epochs": 63,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2512723505496979,
+        "rmse_q1": 0.27750957012176514,
+        "rmse_q2": 0.27801135182380676,
+        "rmse_q3": 0.28281232714653015,
+        "rmse_q4": 0.2630021572113037
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:08:45.716115",
+      "datetime_complete": "2025-08-06T15:08:55.411781",
+      "duration": "0:00:09.695666"
+    },
+    {
+      "number": 4,
+      "value": 0.191099813580513,
+      "params": {
+        "d_model": 32,
+        "nhead": 1,
+        "dim_feedforward": 128,
+        "lr": 3.0049135475501497e-05,
+        "weight_decay": 2.8858963511309983e-05,
+        "batch_size": 32,
+        "n_epochs": 158,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2696000635623932,
+        "rmse_q1": 0.26766762137413025,
+        "rmse_q2": 0.27454641461372375,
+        "rmse_q3": 0.26993656158447266,
+        "rmse_q4": 0.29123565554618835
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:08:55.412364",
+      "datetime_complete": "2025-08-06T15:09:04.812395",
+      "duration": "0:00:09.400031"
+    },
+    {
+      "number": 5,
+      "value": 0.16668874323368071,
+      "params": {
+        "d_model": 64,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.003250100234783278,
+        "weight_decay": 1.8467279100457245e-05,
+        "batch_size": 16,
+        "n_epochs": 53,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.26025697588920593,
+        "rmse_q1": 0.25612202286720276,
+        "rmse_q2": 0.25129765272140503,
+        "rmse_q3": 0.26607051491737366,
+        "rmse_q4": 0.17222702503204346
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:09:04.812978",
+      "datetime_complete": "2025-08-06T15:09:12.716323",
+      "duration": "0:00:07.903345"
+    },
+    {
+      "number": 6,
+      "value": 0.19746129512786864,
+      "params": {
+        "d_model": 128,
+        "nhead": 1,
+        "dim_feedforward": 512,
+        "lr": 2.997577977756372e-05,
+        "weight_decay": 1.7962378305357238e-06,
+        "batch_size": 32,
+        "n_epochs": 211,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.24854718148708344,
+        "rmse_q1": 0.30407679080963135,
+        "rmse_q2": 0.2529599964618683,
+        "rmse_q3": 0.27081942558288574,
+        "rmse_q4": 0.2524559795856476
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:09:12.716886",
+      "datetime_complete": "2025-08-06T15:09:43.130304",
+      "duration": "0:00:30.413418"
+    },
+    {
+      "number": 7,
+      "value": 0.2083037883043289,
+      "params": {
+        "d_model": 64,
+        "nhead": 2,
+        "dim_feedforward": 64,
+        "lr": 0.008405801280631021,
+        "weight_decay": 2.2969166966427387e-06,
+        "batch_size": 128,
+        "n_epochs": 59,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2876306474208832,
+        "rmse_q1": 0.29062923789024353,
+        "rmse_q2": 0.2842279374599457,
+        "rmse_q3": 0.3023390471935272,
+        "rmse_q4": 0.2887340784072876
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:09:43.130887",
+      "datetime_complete": "2025-08-06T15:09:48.027626",
+      "duration": "0:00:04.896739"
+    },
+    {
+      "number": 8,
+      "value": 0.2132146954536438,
+      "params": {
+        "d_model": 128,
+        "nhead": 1,
+        "dim_feedforward": 64,
+        "lr": 0.008333960565158297,
+        "weight_decay": 3.3143060255981932e-06,
+        "batch_size": 64,
+        "n_epochs": 238,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.28754574060440063,
+        "rmse_q1": 0.2990410029888153,
+        "rmse_q2": 0.26827287673950195,
+        "rmse_q3": 0.26686593890190125,
+        "rmse_q4": 0.3618101477622986
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:09:48.028188",
+      "datetime_complete": "2025-08-06T15:10:13.931369",
+      "duration": "0:00:25.903181"
+    },
+    {
+      "number": 9,
+      "value": 0.19765563011169435,
+      "params": {
+        "d_model": 64,
+        "nhead": 1,
+        "dim_feedforward": 64,
+        "lr": 0.0010949017070656564,
+        "weight_decay": 5.764989012932431e-06,
+        "batch_size": 64,
+        "n_epochs": 97,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.28794729709625244,
+        "rmse_q1": 0.2864590883255005,
+        "rmse_q2": 0.2846042513847351,
+        "rmse_q3": 0.2765062749385834,
+        "rmse_q4": 0.26192644238471985
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:10:13.931959",
+      "datetime_complete": "2025-08-06T15:10:20.363619",
+      "duration": "0:00:06.431660"
+    },
+    {
+      "number": 10,
+      "value": 0.1545740097761154,
+      "params": {
+        "d_model": 32,
+        "nhead": 8,
+        "dim_feedforward": 256,
+        "lr": 0.0003272794378135132,
+        "weight_decay": 0.00020679124489068865,
+        "batch_size": 16,
+        "n_epochs": 298,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.24690498411655426,
+        "rmse_q1": 0.24933019280433655,
+        "rmse_q2": 0.2464844286441803,
+        "rmse_q3": 0.255010724067688,
+        "rmse_q4": 0.2481791079044342
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:10:20.364233",
+      "datetime_complete": "2025-08-06T15:11:30.709263",
+      "duration": "0:01:10.345030"
+    },
+    {
+      "number": 11,
+      "value": 0.15587478876113892,
+      "params": {
+        "d_model": 32,
+        "nhead": 8,
+        "dim_feedforward": 256,
+        "lr": 0.00033011212810803804,
+        "weight_decay": 0.0001176477254686406,
+        "batch_size": 16,
+        "n_epochs": 299,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.24900314211845398,
+        "rmse_q1": 0.2492089420557022,
+        "rmse_q2": 0.246151864528656,
+        "rmse_q3": 0.25668230652809143,
+        "rmse_q4": 0.24725335836410522
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:11:30.709865",
+      "datetime_complete": "2025-08-06T15:12:41.202160",
+      "duration": "0:01:10.492295"
+    },
+    {
+      "number": 12,
+      "value": 0.15873352885246278,
+      "params": {
+        "d_model": 32,
+        "nhead": 8,
+        "dim_feedforward": 256,
+        "lr": 0.00046549317283550034,
+        "weight_decay": 0.00011546979882307248,
+        "batch_size": 16,
+        "n_epochs": 299,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2489711195230484,
+        "rmse_q1": 0.250866562128067,
+        "rmse_q2": 0.2470700442790985,
+        "rmse_q3": 0.25551852583885193,
+        "rmse_q4": 0.2473447471857071
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:12:41.202737",
+      "datetime_complete": "2025-08-06T15:13:51.664299",
+      "duration": "0:01:10.461562"
+    },
+    {
+      "number": 13,
+      "value": 0.15629433393478392,
+      "params": {
+        "d_model": 32,
+        "nhead": 8,
+        "dim_feedforward": 256,
+        "lr": 0.000389754043210466,
+        "weight_decay": 8.770780570976081e-05,
+        "batch_size": 16,
+        "n_epochs": 264,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.24505901336669922,
+        "rmse_q1": 0.2518395185470581,
+        "rmse_q2": 0.24600555002689362,
+        "rmse_q3": 0.2583729922771454,
+        "rmse_q4": 0.24828335642814636
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:13:51.664880",
+      "datetime_complete": "2025-08-06T15:14:53.889342",
+      "duration": "0:01:02.224462"
+    },
+    {
+      "number": 14,
+      "value": 0.15353387594223022,
+      "params": {
+        "d_model": 32,
+        "nhead": 8,
+        "dim_feedforward": 256,
+        "lr": 0.0011045968017622334,
+        "weight_decay": 0.0008085529479698688,
+        "batch_size": 16,
+        "n_epochs": 199,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.24655066430568695,
+        "rmse_q1": 0.24908015131950378,
+        "rmse_q2": 0.24755936861038208,
+        "rmse_q3": 0.25516173243522644,
+        "rmse_q4": 0.24866820871829987
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:14:53.889950",
+      "datetime_complete": "2025-08-06T15:15:40.854268",
+      "duration": "0:00:46.964318"
+    },
+    {
+      "number": 15,
+      "value": 0.17673777639865876,
+      "params": {
+        "d_model": 256,
+        "nhead": 8,
+        "dim_feedforward": 256,
+        "lr": 0.001159693830727282,
+        "weight_decay": 0.0008093822727033437,
+        "batch_size": 16,
+        "n_epochs": 175,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2607111930847168,
+        "rmse_q1": 0.2665080428123474,
+        "rmse_q2": 0.25934359431266785,
+        "rmse_q3": 0.259817510843277,
+        "rmse_q4": 0.25258323550224304
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:15:40.854870",
+      "datetime_complete": "2025-08-06T15:16:41.094271",
+      "duration": "0:01:00.239401"
+    },
+    {
+      "number": 16,
+      "value": 0.1528827130794525,
+      "params": {
+        "d_model": 32,
+        "nhead": 8,
+        "dim_feedforward": 256,
+        "lr": 0.0011870673710638966,
+        "weight_decay": 0.000943305992849783,
+        "batch_size": 16,
+        "n_epochs": 207,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.24050816893577576,
+        "rmse_q1": 0.24991752207279205,
+        "rmse_q2": 0.24370838701725006,
+        "rmse_q3": 0.2540647089481354,
+        "rmse_q4": 0.2484113723039627
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:16:41.094850",
+      "datetime_complete": "2025-08-06T15:17:30.072961",
+      "duration": "0:00:48.978111"
+    },
+    {
+      "number": 17,
+      "value": 0.16563257575035095,
+      "params": {
+        "d_model": 32,
+        "nhead": 2,
+        "dim_feedforward": 256,
+        "lr": 0.001247890516960484,
+        "weight_decay": 0.0008862244886837008,
+        "batch_size": 32,
+        "n_epochs": 204,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.24897386133670807,
+        "rmse_q1": 0.2493162900209427,
+        "rmse_q2": 0.2644847631454468,
+        "rmse_q3": 0.2638126611709595,
+        "rmse_q4": 0.24917250871658325
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:17:30.073551",
+      "datetime_complete": "2025-08-06T15:17:48.007106",
+      "duration": "0:00:17.933555"
+    },
+    {
+      "number": 18,
+      "value": 0.16002178490161895,
+      "params": {
+        "d_model": 32,
+        "nhead": 8,
+        "dim_feedforward": 256,
+        "lr": 0.002551268970339415,
+        "weight_decay": 0.0004084532259917107,
+        "batch_size": 128,
+        "n_epochs": 142,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.24630436301231384,
+        "rmse_q1": 0.25238484144210815,
+        "rmse_q2": 0.2477787733078003,
+        "rmse_q3": 0.26313671469688416,
+        "rmse_q4": 0.2511618137359619
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:17:48.007684",
+      "datetime_complete": "2025-08-06T15:18:18.945585",
+      "duration": "0:00:30.937901"
+    },
+    {
+      "number": 19,
+      "value": 0.1820763647556305,
+      "params": {
+        "d_model": 256,
+        "nhead": 8,
+        "dim_feedforward": 256,
+        "lr": 0.0031657814337713946,
+        "weight_decay": 0.0003645814059789235,
+        "batch_size": 16,
+        "n_epochs": 203,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2561967372894287,
+        "rmse_q1": 0.271921306848526,
+        "rmse_q2": 0.25898876786231995,
+        "rmse_q3": 0.26710838079452515,
+        "rmse_q4": 0.2668762803077698
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:18:18.946197",
+      "datetime_complete": "2025-08-06T15:19:28.295944",
+      "duration": "0:01:09.349747"
+    },
+    {
+      "number": 20,
+      "value": 0.15785128772258758,
+      "params": {
+        "d_model": 32,
+        "nhead": 8,
+        "dim_feedforward": 128,
+        "lr": 0.00015635665705500772,
+        "weight_decay": 4.031329199682693e-05,
+        "batch_size": 16,
+        "n_epochs": 228,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.24871020019054413,
+        "rmse_q1": 0.25099673867225647,
+        "rmse_q2": 0.24870513379573822,
+        "rmse_q3": 0.2576981782913208,
+        "rmse_q4": 0.24749508500099182
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:19:28.296512",
+      "datetime_complete": "2025-08-06T15:20:20.518760",
+      "duration": "0:00:52.222248"
+    },
+    {
+      "number": 21,
+      "value": 0.15718022584915162,
+      "params": {
+        "d_model": 32,
+        "nhead": 8,
+        "dim_feedforward": 256,
+        "lr": 0.000654630712815705,
+        "weight_decay": 0.0002438592447424226,
+        "batch_size": 16,
+        "n_epochs": 180,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.24469521641731262,
+        "rmse_q1": 0.25059813261032104,
+        "rmse_q2": 0.24889281392097473,
+        "rmse_q3": 0.2514530420303345,
+        "rmse_q4": 0.25423282384872437
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:20:20.519375",
+      "datetime_complete": "2025-08-06T15:21:03.034339",
+      "duration": "0:00:42.514964"
+    },
+    {
+      "number": 22,
+      "value": 0.15958283841609955,
+      "params": {
+        "d_model": 32,
+        "nhead": 8,
+        "dim_feedforward": 256,
+        "lr": 0.0002234643793504691,
+        "weight_decay": 0.0009106630525528232,
+        "batch_size": 16,
+        "n_epochs": 270,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.24800558388233185,
+        "rmse_q1": 0.2492848038673401,
+        "rmse_q2": 0.2485233098268509,
+        "rmse_q3": 0.257931649684906,
+        "rmse_q4": 0.2500806450843811
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:21:03.034919",
+      "datetime_complete": "2025-08-06T15:22:06.666844",
+      "duration": "0:01:03.631925"
+    },
+    {
+      "number": 23,
+      "value": 0.1571200519800186,
+      "params": {
+        "d_model": 32,
+        "nhead": 8,
+        "dim_feedforward": 256,
+        "lr": 0.0007312583712490372,
+        "weight_decay": 0.00047875728942577985,
+        "batch_size": 16,
+        "n_epochs": 177,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.24704712629318237,
+        "rmse_q1": 0.2516956627368927,
+        "rmse_q2": 0.24758322536945343,
+        "rmse_q3": 0.25461190938949585,
+        "rmse_q4": 0.25240790843963623
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:22:06.667452",
+      "datetime_complete": "2025-08-06T15:22:48.483073",
+      "duration": "0:00:41.815621"
+    },
+    {
+      "number": 24,
+      "value": 0.1679405152797699,
+      "params": {
+        "d_model": 32,
+        "nhead": 2,
+        "dim_feedforward": 256,
+        "lr": 0.002033458390717205,
+        "weight_decay": 0.00020990557776863882,
+        "batch_size": 16,
+        "n_epochs": 265,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.24718481302261353,
+        "rmse_q1": 0.2470882087945938,
+        "rmse_q2": 0.2531997263431549,
+        "rmse_q3": 0.26289692521095276,
+        "rmse_q4": 0.2546324133872986
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:22:48.483654",
+      "datetime_complete": "2025-08-06T15:23:14.799335",
+      "duration": "0:00:26.315681"
+    },
+    {
+      "number": 25,
+      "value": 0.15837973952293397,
+      "params": {
+        "d_model": 32,
+        "nhead": 8,
+        "dim_feedforward": 256,
+        "lr": 0.00020277537083972835,
+        "weight_decay": 6.715242608561737e-05,
+        "batch_size": 16,
+        "n_epochs": 137,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.24715887010097504,
+        "rmse_q1": 0.2515699565410614,
+        "rmse_q2": 0.24449488520622253,
+        "rmse_q3": 0.2609499990940094,
+        "rmse_q4": 0.24765828251838684
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:23:14.799922",
+      "datetime_complete": "2025-08-06T15:23:47.219498",
+      "duration": "0:00:32.419576"
+    },
+    {
+      "number": 26,
+      "value": 0.15738281309604646,
+      "params": {
+        "d_model": 32,
+        "nhead": 8,
+        "dim_feedforward": 256,
+        "lr": 0.0048956981175135635,
+        "weight_decay": 0.0005604956671657269,
+        "batch_size": 64,
+        "n_epochs": 221,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.24449239671230316,
+        "rmse_q1": 0.25507718324661255,
+        "rmse_q2": 0.24819783866405487,
+        "rmse_q3": 0.2558644115924835,
+        "rmse_q4": 0.245193213224411
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:23:47.220083",
+      "datetime_complete": "2025-08-06T15:24:35.846678",
+      "duration": "0:00:48.626595"
+    },
+    {
+      "number": 27,
+      "value": 0.1720530390739441,
+      "params": {
+        "d_model": 256,
+        "nhead": 8,
+        "dim_feedforward": 256,
+        "lr": 0.0017495901538749127,
+        "weight_decay": 0.00025545498934271817,
+        "batch_size": 32,
+        "n_epochs": 194,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.25609225034713745,
+        "rmse_q1": 0.2601175010204315,
+        "rmse_q2": 0.2630784809589386,
+        "rmse_q3": 0.26395952701568604,
+        "rmse_q4": 0.25961747765541077
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:24:35.847261",
+      "datetime_complete": "2025-08-06T15:25:40.064104",
+      "duration": "0:01:04.216843"
+    },
+    {
+      "number": 28,
+      "value": 0.1632511854171753,
+      "params": {
+        "d_model": 64,
+        "nhead": 8,
+        "dim_feedforward": 128,
+        "lr": 0.0007281525395084466,
+        "weight_decay": 0.0006536151787757495,
+        "batch_size": 128,
+        "n_epochs": 278,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.24438701570034027,
+        "rmse_q1": 0.24953292310237885,
+        "rmse_q2": 0.2586289048194885,
+        "rmse_q3": 0.25601470470428467,
+        "rmse_q4": 0.24906480312347412
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:25:40.064688",
+      "datetime_complete": "2025-08-06T15:26:42.273468",
+      "duration": "0:01:02.208780"
+    },
+    {
+      "number": 29,
+      "value": 0.1558454640209675,
+      "params": {
+        "d_model": 256,
+        "nhead": 2,
+        "dim_feedforward": 512,
+        "lr": 0.000581670589870915,
+        "weight_decay": 0.0001473904279708966,
+        "batch_size": 16,
+        "n_epochs": 104,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2815905809402466,
+        "rmse_q1": 0.27511584758758545,
+        "rmse_q2": 0.25548771023750305,
+        "rmse_q3": 0.060246262699365616,
+        "rmse_q4": 0.2614556849002838
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:26:42.274089",
+      "datetime_complete": "2025-08-06T15:27:12.096501",
+      "duration": "0:00:29.822412"
+    },
+    {
+      "number": 30,
+      "value": 0.18574531972408295,
+      "params": {
+        "d_model": 32,
+        "nhead": 4,
+        "dim_feedforward": 512,
+        "lr": 1.1037848854391105e-05,
+        "weight_decay": 5.846660728000102e-05,
+        "batch_size": 16,
+        "n_epochs": 243,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.26389196515083313,
+        "rmse_q1": 0.26485633850097656,
+        "rmse_q2": 0.26127856969833374,
+        "rmse_q3": 0.2622557580471039,
+        "rmse_q4": 0.27938517928123474
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:27:12.097076",
+      "datetime_complete": "2025-08-06T15:27:48.886450",
+      "duration": "0:00:36.789374"
+    },
+    {
+      "number": 31,
+      "value": 0.21815939545631408,
+      "params": {
+        "d_model": 256,
+        "nhead": 2,
+        "dim_feedforward": 512,
+        "lr": 0.0005445889287108398,
+        "weight_decay": 0.00016547665000470502,
+        "batch_size": 16,
+        "n_epochs": 111,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.3062487244606018,
+        "rmse_q1": 0.2366700917482376,
+        "rmse_q2": 0.30925655364990234,
+        "rmse_q3": 0.2714969217777252,
+        "rmse_q4": 0.2797899544239044
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:27:48.887029",
+      "datetime_complete": "2025-08-06T15:28:20.751337",
+      "duration": "0:00:31.864308"
+    },
+    {
+      "number": 32,
+      "value": 0.2089023269712925,
+      "params": {
+        "d_model": 256,
+        "nhead": 2,
+        "dim_feedforward": 512,
+        "lr": 0.0009866560917581781,
+        "weight_decay": 0.00032001895224885966,
+        "batch_size": 16,
+        "n_epochs": 83,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2657141387462616,
+        "rmse_q1": 0.3938351571559906,
+        "rmse_q2": 0.2633140981197357,
+        "rmse_q3": 0.2924528121948242,
+        "rmse_q4": 0.05455508455634117
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:28:20.751956",
+      "datetime_complete": "2025-08-06T15:28:44.675471",
+      "duration": "0:00:23.923515"
+    },
+    {
+      "number": 33,
+      "value": 0.12765752971172334,
+      "params": {
+        "d_model": 256,
+        "nhead": 2,
+        "dim_feedforward": 512,
+        "lr": 9.781013101210778e-05,
+        "weight_decay": 1.023591365643969e-06,
+        "batch_size": 16,
+        "n_epochs": 152,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.24916242063045502,
+        "rmse_q1": 0.0655210092663765,
+        "rmse_q2": 0.2558309733867645,
+        "rmse_q3": 0.07203411310911179,
+        "rmse_q4": 0.25942644476890564
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:28:44.676051",
+      "datetime_complete": "2025-08-06T15:29:28.505082",
+      "duration": "0:00:43.829031"
+    },
+    {
+      "number": 34,
+      "value": 0.18151870667934417,
+      "params": {
+        "d_model": 256,
+        "nhead": 2,
+        "dim_feedforward": 512,
+        "lr": 7.341478358626444e-05,
+        "weight_decay": 1.3441580543066382e-05,
+        "batch_size": 16,
+        "n_epochs": 155,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2517552673816681,
+        "rmse_q1": 0.25086724758148193,
+        "rmse_q2": 0.287982702255249,
+        "rmse_q3": 0.2631547749042511,
+        "rmse_q4": 0.25357213616371155
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:29:28.505694",
+      "datetime_complete": "2025-08-06T15:30:13.208582",
+      "duration": "0:00:44.702888"
+    },
+    {
+      "number": 35,
+      "value": 0.16425371170043945,
+      "params": {
+        "d_model": 128,
+        "nhead": 4,
+        "dim_feedforward": 512,
+        "lr": 0.0001153276508530903,
+        "weight_decay": 6.01718907911483e-06,
+        "batch_size": 16,
+        "n_epochs": 131,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2532217800617218,
+        "rmse_q1": 0.24953904747962952,
+        "rmse_q2": 0.24848021566867828,
+        "rmse_q3": 0.26007989048957825,
+        "rmse_q4": 0.25061067938804626
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:30:13.209151",
+      "datetime_complete": "2025-08-06T15:30:39.245193",
+      "duration": "0:00:26.036042"
+    },
+    {
+      "number": 36,
+      "value": 0.16381202936172484,
+      "params": {
+        "d_model": 32,
+        "nhead": 8,
+        "dim_feedforward": 128,
+        "lr": 5.845885018625284e-05,
+        "weight_decay": 1.1215213448486204e-06,
+        "batch_size": 64,
+        "n_epochs": 190,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2540583312511444,
+        "rmse_q1": 0.248615562915802,
+        "rmse_q2": 0.2493818998336792,
+        "rmse_q3": 0.25879615545272827,
+        "rmse_q4": 0.24830512702465057
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:30:39.245800",
+      "datetime_complete": "2025-08-06T15:31:20.165138",
+      "duration": "0:00:40.919338"
+    },
+    {
+      "number": 37,
+      "value": 0.1006628517061472,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 256,
+        "lr": 0.00021368088713446395,
+        "weight_decay": 2.521988557233572e-05,
+        "batch_size": 16,
+        "n_epochs": 163,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2545441687107086,
+        "rmse_q1": 0.03756912797689438,
+        "rmse_q2": 0.25542619824409485,
+        "rmse_q3": 0.08107824623584747,
+        "rmse_q4": 0.07011532038450241
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:31:20.165772",
+      "datetime_complete": "2025-08-06T15:32:04.165236",
+      "duration": "0:00:43.999464"
+    },
+    {
+      "number": 38,
+      "value": 0.1570194125175476,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 512,
+        "lr": 3.255966611489158e-05,
+        "weight_decay": 2.532467122011365e-05,
+        "batch_size": 128,
+        "n_epochs": 164,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.24824893474578857,
+        "rmse_q1": 0.24788908660411835,
+        "rmse_q2": 0.24829290807247162,
+        "rmse_q3": 0.2590654194355011,
+        "rmse_q4": 0.24995514750480652
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:32:04.165856",
+      "datetime_complete": "2025-08-06T15:32:47.070138",
+      "duration": "0:00:42.904282"
+    },
+    {
+      "number": 39,
+      "value": 0.11402494087815285,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.00023812175547825064,
+        "weight_decay": 9.782273239898107e-06,
+        "batch_size": 32,
+        "n_epochs": 150,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.07196918874979019,
+        "rmse_q1": 0.07397029548883438,
+        "rmse_q2": 0.27071064710617065,
+        "rmse_q3": 0.0676809623837471,
+        "rmse_q4": 0.26165783405303955
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:32:47.070729",
+      "datetime_complete": "2025-08-06T15:33:23.710630",
+      "duration": "0:00:36.639901"
+    },
+    {
+      "number": 40,
+      "value": 0.14515748992562294,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.00021575062434192138,
+        "weight_decay": 9.556421672006445e-06,
+        "batch_size": 32,
+        "n_epochs": 123,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.24979667365550995,
+        "rmse_q1": 0.2584134340286255,
+        "rmse_q2": 0.23566360771656036,
+        "rmse_q3": 0.2646271884441376,
+        "rmse_q4": 0.06043144315481186
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:33:23.711200",
+      "datetime_complete": "2025-08-06T15:33:53.758440",
+      "duration": "0:00:30.047240"
+    },
+    {
+      "number": 41,
+      "value": 0.17508549988269806,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.00012490660445041695,
+        "weight_decay": 1.340796754118614e-05,
+        "batch_size": 32,
+        "n_epochs": 121,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.14807887375354767,
+        "rmse_q1": 0.27937230467796326,
+        "rmse_q2": 0.2703023850917816,
+        "rmse_q3": 0.2718077600002289,
+        "rmse_q4": 0.2489815503358841
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:33:53.759020",
+      "datetime_complete": "2025-08-06T15:34:23.334935",
+      "duration": "0:00:29.575915"
+    },
+    {
+      "number": 42,
+      "value": 0.1309282585978508,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.0002253608745178824,
+        "weight_decay": 6.505806141178291e-06,
+        "batch_size": 32,
+        "n_epochs": 151,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.26493576169013977,
+        "rmse_q1": 0.04774191975593567,
+        "rmse_q2": 0.2667626440525055,
+        "rmse_q3": 0.25870856642723083,
+        "rmse_q4": 0.05780085176229477
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:34:23.335523",
+      "datetime_complete": "2025-08-06T15:35:00.174199",
+      "duration": "0:00:36.838676"
+    },
+    {
+      "number": 43,
+      "value": 0.08825691118836403,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.00022491097070917408,
+        "weight_decay": 7.657705299444505e-06,
+        "batch_size": 32,
+        "n_epochs": 149,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.06509486585855484,
+        "rmse_q1": 0.24444226920604706,
+        "rmse_q2": 0.25075894594192505,
+        "rmse_q3": 0.07629663497209549,
+        "rmse_q4": 0.03176739811897278
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:35:00.174799",
+      "datetime_complete": "2025-08-06T15:35:36.515590",
+      "duration": "0:00:36.340791"
+    },
+    {
+      "number": 44,
+      "value": 0.1270355187356472,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 8.647369483155127e-05,
+        "weight_decay": 4.6309629450252085e-06,
+        "batch_size": 32,
+        "n_epochs": 156,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.06251698732376099,
+        "rmse_q1": 0.2554977834224701,
+        "rmse_q2": 0.257829874753952,
+        "rmse_q3": 0.05015470087528229,
+        "rmse_q4": 0.2813006639480591
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:35:36.516200",
+      "datetime_complete": "2025-08-06T15:36:14.578762",
+      "duration": "0:00:38.062562"
+    },
+    {
+      "number": 45,
+      "value": 0.13664946481585502,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 7.686134633274762e-05,
+        "weight_decay": 3.368527928891071e-06,
+        "batch_size": 32,
+        "n_epochs": 161,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2480732649564743,
+        "rmse_q1": 0.06575248390436172,
+        "rmse_q2": 0.2499878704547882,
+        "rmse_q3": 0.13281762599945068,
+        "rmse_q4": 0.2665548622608185
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:36:14.579350",
+      "datetime_complete": "2025-08-06T15:36:53.845250",
+      "duration": "0:00:39.265900"
+    },
+    {
+      "number": 46,
+      "value": 0.18858983218669892,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 4.4061472217168434e-05,
+        "weight_decay": 1.374820966474104e-06,
+        "batch_size": 32,
+        "n_epochs": 146,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2851792871952057,
+        "rmse_q1": 0.2521999776363373,
+        "rmse_q2": 0.2546813488006592,
+        "rmse_q3": 0.2659185826778412,
+        "rmse_q4": 0.25668802857398987
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:36:53.845843",
+      "datetime_complete": "2025-08-06T15:37:29.473994",
+      "duration": "0:00:35.628151"
+    },
+    {
+      "number": 47,
+      "value": 0.15298234298825264,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.00014154834904183154,
+        "weight_decay": 2.3195554528966496e-06,
+        "batch_size": 32,
+        "n_epochs": 169,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.24764275550842285,
+        "rmse_q1": 0.32904091477394104,
+        "rmse_q2": 0.07086652517318726,
+        "rmse_q3": 0.25120407342910767,
+        "rmse_q4": 0.26637619733810425
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:37:29.474548",
+      "datetime_complete": "2025-08-06T15:38:10.711007",
+      "duration": "0:00:41.236459"
+    },
+    {
+      "number": 48,
+      "value": 0.19108778834342957,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 7.877188776021492e-05,
+        "weight_decay": 4.3757065485614955e-06,
+        "batch_size": 32,
+        "n_epochs": 185,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2527003288269043,
+        "rmse_q1": 0.19032560288906097,
+        "rmse_q2": 0.2464843988418579,
+        "rmse_q3": 0.3066166639328003,
+        "rmse_q4": 0.2639963626861572
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:38:10.711572",
+      "datetime_complete": "2025-08-06T15:38:55.845074",
+      "duration": "0:00:45.133502"
+    },
+    {
+      "number": 49,
+      "value": 0.19705990552902222,
+      "params": {
+        "d_model": 128,
+        "nhead": 1,
+        "dim_feedforward": 64,
+        "lr": 2.1442976770355434e-05,
+        "weight_decay": 2.1037845538917618e-05,
+        "batch_size": 32,
+        "n_epochs": 89,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.25725123286247253,
+        "rmse_q1": 0.2680853009223938,
+        "rmse_q2": 0.2680969834327698,
+        "rmse_q3": 0.2698749899864197,
+        "rmse_q4": 0.27156391739845276
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:38:55.845659",
+      "datetime_complete": "2025-08-06T15:39:06.859756",
+      "duration": "0:00:11.014097"
+    },
+    {
+      "number": 50,
+      "value": 0.0622861422598362,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.0002765537324277527,
+        "weight_decay": 7.882343410304584e-06,
+        "batch_size": 32,
+        "n_epochs": 133,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.06007260084152222,
+        "rmse_q1": 0.2512378692626953,
+        "rmse_q2": 0.03934653103351593,
+        "rmse_q3": 0.05204598978161812,
+        "rmse_q4": 0.05177568271756172
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:39:06.860341",
+      "datetime_complete": "2025-08-06T15:39:39.322107",
+      "duration": "0:00:32.461766"
+    },
+    {
+      "number": 51,
+      "value": 0.11174372136592865,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.00034004467862627254,
+        "weight_decay": 8.137547889624325e-06,
+        "batch_size": 32,
+        "n_epochs": 131,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2617983818054199,
+        "rmse_q1": 0.2559848427772522,
+        "rmse_q2": 0.039701394736766815,
+        "rmse_q3": 0.061008304357528687,
+        "rmse_q4": 0.18472814559936523
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:39:39.322687",
+      "datetime_complete": "2025-08-06T15:40:11.314847",
+      "duration": "0:00:31.992160"
+    },
+    {
+      "number": 52,
+      "value": 0.1213857039809227,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.0003048533063530618,
+        "weight_decay": 7.867866626034091e-06,
+        "batch_size": 32,
+        "n_epochs": 130,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.25908178091049194,
+        "rmse_q1": 0.30118635296821594,
+        "rmse_q2": 0.04542972147464752,
+        "rmse_q3": 0.04104332625865936,
+        "rmse_q4": 0.2632298469543457
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:40:11.315437",
+      "datetime_complete": "2025-08-06T15:40:43.036555",
+      "duration": "0:00:31.721118"
+    },
+    {
+      "number": 53,
+      "value": 0.060823026299476626,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.0002927578303285579,
+        "weight_decay": 8.235910722532219e-06,
+        "batch_size": 32,
+        "n_epochs": 131,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.08860911428928375,
+        "rmse_q1": 0.044887468218803406,
+        "rmse_q2": 0.06365697830915451,
+        "rmse_q3": 0.12276695668697357,
+        "rmse_q4": 0.042491331696510315
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:40:43.037140",
+      "datetime_complete": "2025-08-06T15:41:15.012453",
+      "duration": "0:00:31.975313"
+    },
+    {
+      "number": 54,
+      "value": 0.16230609714984895,
+      "params": {
+        "d_model": 64,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.0004088632706787784,
+        "weight_decay": 1.1857472531891586e-05,
+        "batch_size": 32,
+        "n_epochs": 112,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.24251151084899902,
+        "rmse_q1": 0.25766611099243164,
+        "rmse_q2": 0.25062572956085205,
+        "rmse_q3": 0.2542319893836975,
+        "rmse_q4": 0.2531224489212036
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:41:15.013022",
+      "datetime_complete": "2025-08-06T15:41:30.756005",
+      "duration": "0:00:15.742983"
+    },
+    {
+      "number": 55,
+      "value": 0.08117200210690498,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.0002941410222511923,
+        "weight_decay": 1.6308196835667052e-05,
+        "batch_size": 32,
+        "n_epochs": 136,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.06649667769670486,
+        "rmse_q1": 0.07905115187168121,
+        "rmse_q2": 0.05042964592576027,
+        "rmse_q3": 0.06873582303524017,
+        "rmse_q4": 0.29641467332839966
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:41:30.756595",
+      "datetime_complete": "2025-08-06T15:42:03.860905",
+      "duration": "0:00:33.104310"
+    },
+    {
+      "number": 56,
+      "value": 0.15183200910687447,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.00016762029559579317,
+        "weight_decay": 1.5857195091955636e-05,
+        "batch_size": 32,
+        "n_epochs": 137,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2489721179008484,
+        "rmse_q1": 0.06029924005270004,
+        "rmse_q2": 0.26024702191352844,
+        "rmse_q3": 0.2791183888912201,
+        "rmse_q4": 0.2518775761127472
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:42:03.861497",
+      "datetime_complete": "2025-08-06T15:42:37.248152",
+      "duration": "0:00:33.386655"
+    },
+    {
+      "number": 57,
+      "value": 0.16566135883331298,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.00029665701436849064,
+        "weight_decay": 3.993234199375813e-05,
+        "batch_size": 32,
+        "n_epochs": 82,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.30557048320770264,
+        "rmse_q1": 0.08133373409509659,
+        "rmse_q2": 0.2704581916332245,
+        "rmse_q3": 0.28366899490356445,
+        "rmse_q4": 0.0655386745929718
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:42:37.248710",
+      "datetime_complete": "2025-08-06T15:42:57.350562",
+      "duration": "0:00:20.101852"
+    },
+    {
+      "number": 58,
+      "value": 0.16839996874332427,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.0004545915971830774,
+        "weight_decay": 1.985727834247042e-05,
+        "batch_size": 32,
+        "n_epochs": 130,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.3397218883037567,
+        "rmse_q1": 0.08158531785011292,
+        "rmse_q2": 0.29272598028182983,
+        "rmse_q3": 0.28369471430778503,
+        "rmse_q4": 0.06327496469020844
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:42:57.351143",
+      "datetime_complete": "2025-08-06T15:43:29.063284",
+      "duration": "0:00:31.712141"
+    },
+    {
+      "number": 59,
+      "value": 0.19680161476135255,
+      "params": {
+        "d_model": 128,
+        "nhead": 1,
+        "dim_feedforward": 64,
+        "lr": 0.00034883983722881057,
+        "weight_decay": 2.6107220596972097e-06,
+        "batch_size": 32,
+        "n_epochs": 112,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.27806833386421204,
+        "rmse_q1": 0.28867268562316895,
+        "rmse_q2": 0.26555880904197693,
+        "rmse_q3": 0.2974106967449188,
+        "rmse_q4": 0.2446388602256775
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:43:29.063841",
+      "datetime_complete": "2025-08-06T15:43:42.904763",
+      "duration": "0:00:13.840922"
+    },
+    {
+      "number": 60,
+      "value": 0.16193308532238007,
+      "params": {
+        "d_model": 64,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.00017691134272868598,
+        "weight_decay": 3.3576184615534264e-05,
+        "batch_size": 64,
+        "n_epochs": 168,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2543645203113556,
+        "rmse_q1": 0.2512642443180084,
+        "rmse_q2": 0.2483104020357132,
+        "rmse_q3": 0.2573886513710022,
+        "rmse_q4": 0.24776659905910492
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:43:42.905367",
+      "datetime_complete": "2025-08-06T15:44:05.117754",
+      "duration": "0:00:22.212387"
+    },
+    {
+      "number": 61,
+      "value": 0.10190515592694283,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.0002914395604940677,
+        "weight_decay": 9.375561720289004e-06,
+        "batch_size": 32,
+        "n_epochs": 142,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.06626183539628983,
+        "rmse_q1": 0.058773837983608246,
+        "rmse_q2": 0.04829718917608261,
+        "rmse_q3": 0.26030194759368896,
+        "rmse_q4": 0.26953238248825073
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:44:05.118304",
+      "datetime_complete": "2025-08-06T15:44:39.659567",
+      "duration": "0:00:34.541263"
+    },
+    {
+      "number": 62,
+      "value": 0.1037050060927868,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.0002617567612374788,
+        "weight_decay": 7.068467672413421e-06,
+        "batch_size": 32,
+        "n_epochs": 140,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.06988699734210968,
+        "rmse_q1": 0.2449507862329483,
+        "rmse_q2": 0.28264930844306946,
+        "rmse_q3": 0.09600835293531418,
+        "rmse_q4": 0.05650470405817032
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:44:39.660153",
+      "datetime_complete": "2025-08-06T15:45:13.799595",
+      "duration": "0:00:34.139442"
+    },
+    {
+      "number": 63,
+      "value": 0.0995231494307518,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.00048275592736610933,
+        "weight_decay": 4.926395890519694e-06,
+        "batch_size": 32,
+        "n_epochs": 138,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.3117779791355133,
+        "rmse_q1": 0.05830368772149086,
+        "rmse_q2": 0.25567418336868286,
+        "rmse_q3": 0.03745030239224434,
+        "rmse_q4": 0.07065684348344803
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:45:13.800181",
+      "datetime_complete": "2025-08-06T15:45:47.464961",
+      "duration": "0:00:33.664780"
+    },
+    {
+      "number": 64,
+      "value": 0.19685466438531876,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.0004935865498613294,
+        "weight_decay": 5.044866137133887e-06,
+        "batch_size": 32,
+        "n_epochs": 99,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2655068635940552,
+        "rmse_q1": 0.3307732939720154,
+        "rmse_q2": 0.09570399671792984,
+        "rmse_q3": 0.25698989629745483,
+        "rmse_q4": 0.276244580745697
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:45:47.465507",
+      "datetime_complete": "2025-08-06T15:46:11.697802",
+      "duration": "0:00:24.232295"
+    },
+    {
+      "number": 65,
+      "value": 0.24121679961681367,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 128,
+        "lr": 0.0009085668528693283,
+        "weight_decay": 1.0313753437279198e-05,
+        "batch_size": 32,
+        "n_epochs": 121,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.20103518664836884,
+        "rmse_q1": 0.29449912905693054,
+        "rmse_q2": 0.3793622553348541,
+        "rmse_q3": 0.3394821286201477,
+        "rmse_q4": 0.2739963233470917
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:46:11.698385",
+      "datetime_complete": "2025-08-06T15:46:41.647282",
+      "duration": "0:00:29.948897"
+    },
+    {
+      "number": 66,
+      "value": 0.17119490802288057,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.00018337329023268505,
+        "weight_decay": 1.598053355233155e-05,
+        "batch_size": 128,
+        "n_epochs": 142,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.25585561990737915,
+        "rmse_q1": 0.2608150839805603,
+        "rmse_q2": 0.2479856312274933,
+        "rmse_q3": 0.2595863342285156,
+        "rmse_q4": 0.2543824017047882
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:46:41.647860",
+      "datetime_complete": "2025-08-06T15:47:14.146245",
+      "duration": "0:00:32.498385"
+    },
+    {
+      "number": 67,
+      "value": 0.11613485291600227,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.0004264178189255464,
+        "weight_decay": 3.906139060657877e-06,
+        "batch_size": 32,
+        "n_epochs": 174,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.31071484088897705,
+        "rmse_q1": 0.03929585590958595,
+        "rmse_q2": 0.07202634960412979,
+        "rmse_q3": 0.039250485599040985,
+        "rmse_q4": 0.26332059502601624
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:47:14.146838",
+      "datetime_complete": "2025-08-06T15:47:56.592856",
+      "duration": "0:00:42.446018"
+    },
+    {
+      "number": 68,
+      "value": 0.12542039826512336,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.00013965560285108243,
+        "weight_decay": 2.449892098632513e-05,
+        "batch_size": 32,
+        "n_epochs": 162,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.06500957906246185,
+        "rmse_q1": 0.2653428912162781,
+        "rmse_q2": 0.2584281861782074,
+        "rmse_q3": 0.2649172842502594,
+        "rmse_q4": 0.057029202580451965
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:47:56.593453",
+      "datetime_complete": "2025-08-06T15:48:36.181306",
+      "duration": "0:00:39.587853"
+    },
+    {
+      "number": 69,
+      "value": 0.11358942985534667,
+      "params": {
+        "d_model": 256,
+        "nhead": 1,
+        "dim_feedforward": 64,
+        "lr": 0.0002591030897274059,
+        "weight_decay": 5.366184000498445e-06,
+        "batch_size": 32,
+        "n_epochs": 145,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.10321791470050812,
+        "rmse_q1": 0.040454111993312836,
+        "rmse_q2": 0.28730836510658264,
+        "rmse_q3": 0.049020104110240936,
+        "rmse_q4": 0.29874715209007263
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:48:36.181909",
+      "datetime_complete": "2025-08-06T15:49:10.523317",
+      "duration": "0:00:34.341408"
+    },
+    {
+      "number": 70,
+      "value": 0.14407642856240271,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.000640177123557922,
+        "weight_decay": 3.1451945725899904e-06,
+        "batch_size": 32,
+        "n_epochs": 115,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2667734622955322,
+        "rmse_q1": 0.26674720644950867,
+        "rmse_q2": 0.06016814708709717,
+        "rmse_q3": 0.0424075685441494,
+        "rmse_q4": 0.2682018280029297
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:49:10.523922",
+      "datetime_complete": "2025-08-06T15:49:38.604701",
+      "duration": "0:00:28.080779"
+    },
+    {
+      "number": 71,
+      "value": 0.21111170947551727,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.0002786111654093113,
+        "weight_decay": 7.406627173123153e-06,
+        "batch_size": 32,
+        "n_epochs": 138,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.4588026702404022,
+        "rmse_q1": 0.24784187972545624,
+        "rmse_q2": 0.04263877496123314,
+        "rmse_q3": 0.34385329484939575,
+        "rmse_q4": 0.28834986686706543
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:49:38.605304",
+      "datetime_complete": "2025-08-06T15:50:12.231707",
+      "duration": "0:00:33.626403"
+    },
+    {
+      "number": 72,
+      "value": 0.14536111652851105,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.00038704362824415483,
+        "weight_decay": 6.6119631844387155e-06,
+        "batch_size": 32,
+        "n_epochs": 126,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.335319846868515,
+        "rmse_q1": 0.2611263692378998,
+        "rmse_q2": 0.2871321439743042,
+        "rmse_q3": 0.04256722331047058,
+        "rmse_q4": 0.10661133378744125
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:50:12.232294",
+      "datetime_complete": "2025-08-06T15:50:42.944647",
+      "duration": "0:00:30.712353"
+    },
+    {
+      "number": 73,
+      "value": 0.11019939929246902,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.000272598478914997,
+        "weight_decay": 1.1829881084432234e-05,
+        "batch_size": 64,
+        "n_epochs": 139,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.06346769630908966,
+        "rmse_q1": 0.2237342894077301,
+        "rmse_q2": 0.13595639169216156,
+        "rmse_q3": 0.05667610093951225,
+        "rmse_q4": 0.26907816529273987
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:50:42.945228",
+      "datetime_complete": "2025-08-06T15:51:15.502565",
+      "duration": "0:00:32.557337"
+    },
+    {
+      "number": 74,
+      "value": 0.1613211065530777,
+      "params": {
+        "d_model": 64,
+        "nhead": 4,
+        "dim_feedforward": 128,
+        "lr": 0.0002030927192793112,
+        "weight_decay": 1.6266895563854615e-05,
+        "batch_size": 32,
+        "n_epochs": 149,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2510366439819336,
+        "rmse_q1": 0.2469116449356079,
+        "rmse_q2": 0.26348501443862915,
+        "rmse_q3": 0.2562386989593506,
+        "rmse_q4": 0.2429456114768982
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:51:15.503134",
+      "datetime_complete": "2025-08-06T15:51:36.755647",
+      "duration": "0:00:21.252513"
+    },
+    {
+      "number": 75,
+      "value": 0.21713874042034148,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.0005366254264744842,
+        "weight_decay": 8.267637845007662e-06,
+        "batch_size": 128,
+        "n_epochs": 133,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2681259512901306,
+        "rmse_q1": 0.28662148118019104,
+        "rmse_q2": 0.2689429223537445,
+        "rmse_q3": 0.2915826439857483,
+        "rmse_q4": 0.2773922085762024
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:51:36.756243",
+      "datetime_complete": "2025-08-06T15:52:07.097402",
+      "duration": "0:00:30.341159"
+    },
+    {
+      "number": 76,
+      "value": 0.17487793564796447,
+      "params": {
+        "d_model": 128,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.00011183440870725562,
+        "weight_decay": 1.1591718326008006e-05,
+        "batch_size": 32,
+        "n_epochs": 103,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.24552558362483978,
+        "rmse_q1": 0.27078860998153687,
+        "rmse_q2": 0.26107197999954224,
+        "rmse_q3": 0.25307655334472656,
+        "rmse_q4": 0.258800208568573
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:52:07.098043",
+      "datetime_complete": "2025-08-06T15:52:24.091194",
+      "duration": "0:00:16.993151"
+    },
+    {
+      "number": 77,
+      "value": 0.19641750305891037,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.0008755726521056491,
+        "weight_decay": 5.863248570985439e-06,
+        "batch_size": 32,
+        "n_epochs": 156,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2802529036998749,
+        "rmse_q1": 0.05214794725179672,
+        "rmse_q2": 0.33014994859695435,
+        "rmse_q3": 0.21223017573356628,
+        "rmse_q4": 0.32362911105155945
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:52:24.091773",
+      "datetime_complete": "2025-08-06T15:53:01.969596",
+      "duration": "0:00:37.877823"
+    },
+    {
+      "number": 78,
+      "value": 0.12392656281590461,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 256,
+        "lr": 0.00035987972043784254,
+        "weight_decay": 2.7127148026442276e-05,
+        "batch_size": 32,
+        "n_epochs": 116,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.06223393604159355,
+        "rmse_q1": 0.20498934388160706,
+        "rmse_q2": 0.13219082355499268,
+        "rmse_q3": 0.29879769682884216,
+        "rmse_q4": 0.06820663064718246
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:53:01.970172",
+      "datetime_complete": "2025-08-06T15:53:32.137198",
+      "duration": "0:00:30.167026"
+    },
+    {
+      "number": 79,
+      "value": 0.1455905482172966,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.0007675671787426532,
+        "weight_decay": 5.583197544584764e-05,
+        "batch_size": 32,
+        "n_epochs": 144,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.29537585377693176,
+        "rmse_q1": 0.21990060806274414,
+        "rmse_q2": 0.25395292043685913,
+        "rmse_q3": 0.04508838802576065,
+        "rmse_q4": 0.25071418285369873
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:53:32.137789",
+      "datetime_complete": "2025-08-06T15:54:07.200728",
+      "duration": "0:00:35.062939"
+    },
+    {
+      "number": 80,
+      "value": 0.08906083852052689,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.0001473998279499866,
+        "weight_decay": 3.9647593572798025e-06,
+        "batch_size": 64,
+        "n_epochs": 171,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.25539565086364746,
+        "rmse_q1": 0.25081074237823486,
+        "rmse_q2": 0.04703221097588539,
+        "rmse_q3": 0.04612486809492111,
+        "rmse_q4": 0.04850330948829651
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:54:07.201344",
+      "datetime_complete": "2025-08-06T15:54:47.122088",
+      "duration": "0:00:39.920744"
+    },
+    {
+      "number": 81,
+      "value": 0.14402410686016082,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.00014496634133826593,
+        "weight_decay": 4.030221314328583e-06,
+        "batch_size": 64,
+        "n_epochs": 182,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2471102476119995,
+        "rmse_q1": 0.25469571352005005,
+        "rmse_q2": 0.2559768855571747,
+        "rmse_q3": 0.2564226984977722,
+        "rmse_q4": 0.09512636065483093
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:54:47.122675",
+      "datetime_complete": "2025-08-06T15:55:29.635689",
+      "duration": "0:00:42.513014"
+    },
+    {
+      "number": 82,
+      "value": 0.12356439381837844,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.00024621032191944956,
+        "weight_decay": 8.954353869940548e-06,
+        "batch_size": 64,
+        "n_epochs": 166,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.09331320971250534,
+        "rmse_q1": 0.049360230565071106,
+        "rmse_q2": 0.23079335689544678,
+        "rmse_q3": 0.2131793200969696,
+        "rmse_q4": 0.2488112449645996
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:55:29.636260",
+      "datetime_complete": "2025-08-06T15:56:08.438663",
+      "duration": "0:00:38.802403"
+    },
+    {
+      "number": 83,
+      "value": 0.15246503204107284,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.0001913087219120224,
+        "weight_decay": 1.7221210668097628e-06,
+        "batch_size": 64,
+        "n_epochs": 159,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2508646845817566,
+        "rmse_q1": 0.25307491421699524,
+        "rmse_q2": 0.08010685443878174,
+        "rmse_q3": 0.2563197612762451,
+        "rmse_q4": 0.2648301422595978
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:56:08.439252",
+      "datetime_complete": "2025-08-06T15:56:45.631615",
+      "duration": "0:00:37.192363"
+    },
+    {
+      "number": 84,
+      "value": 0.08151005804538727,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.00030152677511090844,
+        "weight_decay": 7.281755611385725e-06,
+        "batch_size": 64,
+        "n_epochs": 175,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.15355971455574036,
+        "rmse_q1": 0.055594511330127716,
+        "rmse_q2": 0.2519736886024475,
+        "rmse_q3": 0.06187000498175621,
+        "rmse_q4": 0.04511445015668869
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:56:45.632191",
+      "datetime_complete": "2025-08-06T15:57:26.528161",
+      "duration": "0:00:40.895970"
+    },
+    {
+      "number": 85,
+      "value": 0.11690111830830574,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 256,
+        "lr": 0.0003195476038467167,
+        "weight_decay": 2.8444956301945733e-06,
+        "batch_size": 64,
+        "n_epochs": 173,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.06819642335176468,
+        "rmse_q1": 0.2649751305580139,
+        "rmse_q2": 0.24175818264484406,
+        "rmse_q3": 0.05075327306985855,
+        "rmse_q4": 0.2575339376926422
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:57:26.528755",
+      "datetime_complete": "2025-08-06T15:58:09.527704",
+      "duration": "0:00:42.998949"
+    },
+    {
+      "number": 86,
+      "value": 0.1366240181028843,
+      "params": {
+        "d_model": 256,
+        "nhead": 1,
+        "dim_feedforward": 64,
+        "lr": 0.00016762979569051096,
+        "weight_decay": 5.22354408312875e-06,
+        "batch_size": 64,
+        "n_epochs": 215,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.28025007247924805,
+        "rmse_q1": 0.08008522540330887,
+        "rmse_q2": 0.048168331384658813,
+        "rmse_q3": 0.29462435841560364,
+        "rmse_q4": 0.2804005742073059
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:58:09.528303",
+      "datetime_complete": "2025-08-06T15:58:56.529803",
+      "duration": "0:00:47.001500"
+    },
+    {
+      "number": 87,
+      "value": 0.1591811552643776,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.00046058756273236997,
+        "weight_decay": 3.4548022986424487e-06,
+        "batch_size": 64,
+        "n_epochs": 192,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.07106367498636246,
+        "rmse_q1": 0.261819064617157,
+        "rmse_q2": 0.2670360803604126,
+        "rmse_q3": 0.2823490798473358,
+        "rmse_q4": 0.25737228989601135
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:58:56.530393",
+      "datetime_complete": "2025-08-06T15:59:41.376114",
+      "duration": "0:00:44.845721"
+    },
+    {
+      "number": 88,
+      "value": 0.11788586899638176,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 9.41358050563494e-05,
+        "weight_decay": 1.4934438579441852e-05,
+        "batch_size": 64,
+        "n_epochs": 184,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.06736961752176285,
+        "rmse_q1": 0.05766677111387253,
+        "rmse_q2": 0.2487245500087738,
+        "rmse_q3": 0.2614629864692688,
+        "rmse_q4": 0.2511511445045471
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T15:59:41.376690",
+      "datetime_complete": "2025-08-06T16:00:24.337910",
+      "duration": "0:00:42.961220"
+    },
+    {
+      "number": 89,
+      "value": 0.16115722358226775,
+      "params": {
+        "d_model": 64,
+        "nhead": 4,
+        "dim_feedforward": 128,
+        "lr": 0.00021633944418106526,
+        "weight_decay": 1.912785004991534e-05,
+        "batch_size": 64,
+        "n_epochs": 150,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.24529194831848145,
+        "rmse_q1": 0.2455948144197464,
+        "rmse_q2": 0.25910845398902893,
+        "rmse_q3": 0.2600845694541931,
+        "rmse_q4": 0.24567684531211853
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T16:00:24.338523",
+      "datetime_complete": "2025-08-06T16:00:44.534742",
+      "duration": "0:00:20.196219"
+    },
+    {
+      "number": 90,
+      "value": 0.19587761759757996,
+      "params": {
+        "d_model": 256,
+        "nhead": 2,
+        "dim_feedforward": 256,
+        "lr": 0.00012492887461511368,
+        "weight_decay": 1.1000622117534952e-05,
+        "batch_size": 128,
+        "n_epochs": 124,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2602390944957733,
+        "rmse_q1": 0.26799505949020386,
+        "rmse_q2": 0.25421175360679626,
+        "rmse_q3": 0.2700422406196594,
+        "rmse_q4": 0.28495609760284424
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T16:00:44.535319",
+      "datetime_complete": "2025-08-06T16:01:13.299428",
+      "duration": "0:00:28.764109"
+    },
+    {
+      "number": 91,
+      "value": 0.10207965523004532,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.0002582460065655639,
+        "weight_decay": 6.07898022296039e-06,
+        "batch_size": 32,
+        "n_epochs": 135,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.25489941239356995,
+        "rmse_q1": 0.059138499200344086,
+        "rmse_q2": 0.1280367076396942,
+        "rmse_q3": 0.24790897965431213,
+        "rmse_q4": 0.03405793756246567
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T16:01:13.300028",
+      "datetime_complete": "2025-08-06T16:01:46.225431",
+      "duration": "0:00:32.925403"
+    },
+    {
+      "number": 92,
+      "value": 0.09813556484878064,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.00031531507331743105,
+        "weight_decay": 6.5556570551192685e-06,
+        "batch_size": 32,
+        "n_epochs": 155,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.3236023783683777,
+        "rmse_q1": 0.08312104642391205,
+        "rmse_q2": 0.07934197038412094,
+        "rmse_q3": 0.05240515246987343,
+        "rmse_q4": 0.03543055057525635
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T16:01:46.226012",
+      "datetime_complete": "2025-08-06T16:02:23.960684",
+      "duration": "0:00:37.734672"
+    },
+    {
+      "number": 93,
+      "value": 0.16870876252651215,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.0005931998177891072,
+        "weight_decay": 1.3780529139172904e-05,
+        "batch_size": 32,
+        "n_epochs": 170,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2555546164512634,
+        "rmse_q1": 0.2880612313747406,
+        "rmse_q2": 0.2584748864173889,
+        "rmse_q3": 0.2573050856590271,
+        "rmse_q4": 0.24600543081760406
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T16:02:23.961278",
+      "datetime_complete": "2025-08-06T16:03:05.311869",
+      "duration": "0:00:41.350591"
+    },
+    {
+      "number": 94,
+      "value": 0.14277062565088272,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.00038680912449612934,
+        "weight_decay": 4.653928636679672e-06,
+        "batch_size": 64,
+        "n_epochs": 155,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.24537931382656097,
+        "rmse_q1": 0.2627725899219513,
+        "rmse_q2": 0.24678091704845428,
+        "rmse_q3": 0.17163114249706268,
+        "rmse_q4": 0.06436476856470108
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T16:03:05.312458",
+      "datetime_complete": "2025-08-06T16:03:41.540029",
+      "duration": "0:00:36.227571"
+    },
+    {
+      "number": 95,
+      "value": 0.1371682919561863,
+      "params": {
+        "d_model": 128,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.00031552570401133825,
+        "weight_decay": 9.135283594168663e-06,
+        "batch_size": 32,
+        "n_epochs": 164,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.26420509815216064,
+        "rmse_q1": 0.2203751653432846,
+        "rmse_q2": 0.05053696036338806,
+        "rmse_q3": 0.2456078678369522,
+        "rmse_q4": 0.25374966859817505
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T16:03:41.540615",
+      "datetime_complete": "2025-08-06T16:04:08.499989",
+      "duration": "0:00:26.959374"
+    },
+    {
+      "number": 96,
+      "value": 0.17270996123552323,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.00022658624753732633,
+        "weight_decay": 7.292472021477073e-06,
+        "batch_size": 32,
+        "n_epochs": 177,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2710694968700409,
+        "rmse_q1": 0.17519958317279816,
+        "rmse_q2": 0.26412755250930786,
+        "rmse_q3": 0.2758485972881317,
+        "rmse_q4": 0.25326070189476013
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T16:04:08.500580",
+      "datetime_complete": "2025-08-06T16:04:51.508355",
+      "duration": "0:00:43.007775"
+    },
+    {
+      "number": 97,
+      "value": 0.1968405544757843,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.0004928552429792239,
+        "weight_decay": 3.222729662375784e-05,
+        "batch_size": 32,
+        "n_epochs": 198,
+        "use_scheduler": true
+      },
+      "user_attrs": {
+        "rmse_q0": 0.2520986795425415,
+        "rmse_q1": 0.27501940727233887,
+        "rmse_q2": 0.2727483808994293,
+        "rmse_q3": 0.2787768840789795,
+        "rmse_q4": 0.25475549697875977
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T16:04:51.508937",
+      "datetime_complete": "2025-08-06T16:05:39.601837",
+      "duration": "0:00:48.092900"
+    },
+    {
+      "number": 98,
+      "value": 0.06514450125396251,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 64,
+        "lr": 0.00016321816921252463,
+        "weight_decay": 2.0448836586724598e-06,
+        "batch_size": 16,
+        "n_epochs": 146,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.057071417570114136,
+        "rmse_q1": 0.043786656111478806,
+        "rmse_q2": 0.03508232161402702,
+        "rmse_q3": 0.27402442693710327,
+        "rmse_q4": 0.039099808782339096
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T16:05:39.602442",
+      "datetime_complete": "2025-08-06T16:06:16.616110",
+      "duration": "0:00:37.013668"
+    },
+    {
+      "number": 99,
+      "value": 0.11465874165296555,
+      "params": {
+        "d_model": 256,
+        "nhead": 4,
+        "dim_feedforward": 256,
+        "lr": 6.495883290972568e-05,
+        "weight_decay": 1.8754352178165927e-06,
+        "batch_size": 16,
+        "n_epochs": 127,
+        "use_scheduler": false
+      },
+      "user_attrs": {
+        "rmse_q0": 0.24663078784942627,
+        "rmse_q1": 0.04973233491182327,
+        "rmse_q2": 0.04962014779448509,
+        "rmse_q3": 0.257121205329895,
+        "rmse_q4": 0.261613130569458
+      },
+      "state": "COMPLETE",
+      "datetime_start": "2025-08-06T16:06:16.616696",
+      "datetime_complete": "2025-08-06T16:06:51.026310",
+      "duration": "0:00:34.409614"
+    }
+  ]
+}

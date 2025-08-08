@@ -55,7 +55,9 @@ def circuit_to_gategraph_data(
         for n in lc[q]:
             m[node_idx[n]] = 1.0
         masks.append(m)
-    lightcone_masks = np.stack(masks, axis=0) if masks else np.zeros((0, len(nodes)), dtype=np.float32)
+    lightcone_masks = (np.stack(masks, axis=1) if masks
+                   else np.zeros((len(nodes), 0), dtype=np.float32))  # (num_nodes, num_measured)
+
 
     data = Data(
         x=to_torch(x, "float"),
