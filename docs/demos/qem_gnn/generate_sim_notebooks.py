@@ -108,6 +108,179 @@ DATASETS = [
 ]
 
 
+# --------------------------------------------------------------------------
+# Tier 0 + Tier 1 section (qem_levels.py / qem_ext.py / qem_train.py).
+# Kept in one place so both the generator and any hand-patched notebook stay
+# in sync. model.py and train_loop.py are untouched by all of this.
+# --------------------------------------------------------------------------
+
+TIER01_INTRO = """## Tier 0 + Tier 1: discrete-level head and a configurable training loop
+
+Opt-in additions living in `qem_levels.py` / `qem_ext.py` / `qem_train.py`. `model.py` and
+`train_loop.py` are untouched, so every cell above keeps its original behaviour --
+`QEMGraphTransformerX(head="scalar")` has a bit-identical `state_dict` to
+`QEMGraphTransformer`, and `TrainConfig()`'s defaults reproduce the original loop exactly.
+
+**Tier 0 -- match the head to the target distribution.** Some of these datasets have
+targets that are not continuous: random Clifford circuits give `<Z>` in {-1, 0, +1}
+exactly. Regressing on such a target makes the model hedge -- it emits 0.87 where the
+truth is 1.0 and pays MAE on a point whose class it already got right.
+`LevelSet.detect` inspects the **training** labels only and returns a level set just when
+they really do collapse onto a few atoms, otherwise `None`, in which case the cells below
+fall back to regression. Across this repo it fires for `haoran_mbd/random_cliffords` and
+`haoran_mbd_coherent/random_cliffords`, and returns `None` for the `ising_*`,
+`mbd_theta_*` and `random_brickwork` datasets.
+
+**Tier 1 -- training-loop fixes.** `nn.SmoothL1Loss()` defaults to `beta=1.0`, and every
+residual here lives in [-2, 2], so the loss never leaves the quadratic regime: it is
+exactly `0.5*MSE`, with none of the robustness the name suggests. The LR was held constant
+for the whole run. And a single unseeded run is not a like-for-like comparison against a
+100-tree forest. `TrainConfig` exposes all three.
+
+Both new heads zero-initialise their last layer, so training *starts* at a known baseline
+and can only improve on it: `residual` starts at `y_hat = noisy_z` (the unmitigated
+value), and `level` carries a `-gamma*(noisy_z - l_k)^2` prior term so its argmax at step 0
+is exactly "snap `noisy_z` to the nearest level"."""
+
+TIER01_DETECT = """import qem_levels, qem_ext, qem_train
+importlib.reload(qem_levels); importlib.reload(qem_ext); importlib.reload(qem_train)
+
+from qem_levels import LevelSet, level_report
+from qem_ext import QEMGraphTransformerX
+from qem_train import TrainConfig, train_qem, train_ensemble, collect, ensemble_predict, metrics
+
+# Detect the level set from the TRAINING labels only (never the val split).
+# Returns None when the targets are genuinely continuous -- the next cell then
+# falls back to the residual regression head.
+y_train_all = torch.cat([d.y for d in train_loader.dataset])
+levels = LevelSet.detect(y_train_all)
+print(levels, "|", level_report(y_train_all, levels))"""
+
+TIER01_TRAIN = """# Capacity/dropout follow Tier 1: the original run underfits, so keep d_model at
+# least 64 and drop the dropout that was regularising overfitting that isn't
+# there. Layers/heads match model_cfg from the cell above.
+cfg_common = dict(d_model=max(64, model_cfg["d_model"]),
+                  layers=model_cfg["layers"], heads=model_cfg["heads"],
+                  dropout=0.05, use_noisy=True)
+
+if levels is not None:
+    # Tier 0: K-way classification over the detected levels.
+    model_cfg_x = dict(cfg_common, head="level", levels=levels)
+    train_cfg = TrainConfig(epochs=80, lr=1e-3, wd=1e-4, patience=25,
+                            loss="ce", scheduler="cosine", warmup_epochs=5,
+                            select_on="acc", seed=0)
+else:
+    # Continuous targets: stay a regressor, but keep the Tier 1 fixes --
+    # residual head, a beta that actually reaches the linear regime, cosine LR.
+    model_cfg_x = dict(cfg_common, head="residual")
+    train_cfg = TrainConfig(epochs=80, lr=1e-3, wd=1e-4, patience=25,
+                            loss="smooth_l1", huber_beta=0.05, scheduler="cosine",
+                            warmup_epochs=5, select_on="mae", seed=0)
+
+net_x, hist_x = train_qem(model_cfg_x, (train_loader, val_loader), train_cfg,
+                          best_ckpt_path=f"{RUN_DIR}/best_qem_x.pt")
+print("Total params:", sum(p.numel() for p in net_x.parameters()))"""
+
+TIER01_ENSEMBLE = """# 5-seed ensemble -- a single unseeded run is not comparable to a 100-tree forest.
+nets_x, hists_x = train_ensemble(
+    model_cfg_x, (train_loader, val_loader),
+    TrainConfig(**{**train_cfg.__dict__, "verbose": False}),
+    seeds=(0, 1, 2, 3, 4), ckpt_prefix=f"{RUN_DIR}/qem_x",
+)
+print(f"trained {len(nets_x)} members")"""
+
+TIER01_COMPARE = """from sklearn.ensemble import RandomForestClassifier
+
+rows = {}
+rows["Noisy (unmitigated)"] = metrics(noisy_np, ideal_np, levels)
+rows["RF regressor"] = metrics(rf_preds, y_val.numpy(), levels)
+rows["QAGT-MLP original (raw)"] = metrics(gnn_np, ideal_np, levels)
+
+if levels is not None:
+    lv = np.asarray(levels.levels)
+    to_cls = lambda a: np.abs(np.asarray(a)[..., None] - lv).argmin(-1)
+    snap_np = lambda a: lv[to_cls(a)]
+
+    # Snapping costs nothing and applies to every baseline, so compare like with like.
+    rows["Noisy, snapped"] = metrics(snap_np(noisy_np), ideal_np, levels)
+    rows["RF regressor, snapped"] = metrics(snap_np(rf_preds), y_val.numpy(), levels)
+    rf_clf_pred = np.stack([
+        lv[RandomForestClassifier(n_estimators=100, n_jobs=-1, random_state=0)
+           .fit(X_train.numpy(), to_cls(y_train.numpy())[:, q]).predict(X_val.numpy())]
+        for q in range(M)
+    ], axis=1)
+    rows["RF classifier"] = metrics(rf_clf_pred, y_val.numpy(), levels)
+    rows["QAGT-MLP original (snapped)"] = metrics(snap_np(gnn_np), ideal_np, levels)
+
+# argmax is the MAE-optimal decoding of the level head; sum_k p_k * l_k is the
+# RMSE-optimal one (hedging *is* correct under squared error). Report both.
+raw_x, y_x, _ = collect(net_x, val_loader, device)
+modes = ("argmax", "expect") if net_x.is_classifier else ("raw",)
+for mode in modes:
+    rows[f"QAGT-MLP Tier0+1, 1 seed ({mode})"] = metrics(
+        net_x.decode(raw_x, mode).numpy(), y_x.numpy(), levels)
+for mode in modes:
+    p_ens, y_ens, _ = ensemble_predict(nets_x, val_loader, device, decode=mode)
+    rows[f"QAGT-MLP Tier0+1, 5-seed ens ({mode})"] = metrics(p_ens, y_ens, levels)
+
+comparison = pd.DataFrame(rows).T
+print(comparison.to_string(float_format=lambda v: f"{v:.4f}"))
+comparison.to_csv(f"{RUN_DIR}/comparison_tier01.csv")"""
+
+TIER01_FIGURE = """# Per-qubit RMSE: unmitigated vs RF vs QAGT-MLP (Tier 0+1), same style as the
+# figure above. A level head is decoded with "expect" (sum_k p_k * l_k), which
+# is the RMSE-optimal decoding -- and RMSE is what this figure reports.
+p_fig, y_fig, _ = ensemble_predict(nets_x, val_loader, device,
+                                   decode="expect" if net_x.is_classifier else "raw")
+p_fig = p_fig.reshape(-1, M)
+y_fig = y_fig.reshape(-1, M)
+
+rmse_un_x = rmse_per_qubit(noisy_np, ideal_np)
+rmse_rf_x = rmse_per_qubit(rf_preds, y_val.numpy())
+rmse_qagt_x = rmse_per_qubit(p_fig, y_fig)
+
+x = np.arange(M)
+width = 0.25
+plt.figure(figsize=(8, 5))
+bars = [
+    plt.bar(x - width, rmse_un_x, width, label="Noisy (unmitigated)"),
+    plt.bar(x, rmse_rf_x, width, label="RF"),
+    plt.bar(x + width, rmse_qagt_x, width, label="QAGT-MLP (Tier 0+1)"),
+]
+for b in bars:
+    plt.bar_label(b, fmt="%.3f", fontsize=8, padding=2)
+# headroom so the legend never sits on top of a bar label
+plt.ylim(0, max(rmse_un_x.max(), rmse_rf_x.max(), rmse_qagt_x.max()) * 1.25)
+plt.xticks(x, [f"q{q}" for q in range(M)])
+plt.ylabel("RMSE vs ideal")
+plt.title(f"{DATASET_NAME}: RMSE by qubit (lower is better)")
+plt.legend(loc="upper center", ncol=3, fontsize=9, frameon=False)
+plt.tight_layout()
+plt.savefig(f"{RUN_DIR}/rmse_comparison_tier01.png", dpi=150)
+plt.show()
+
+rmse_table = pd.DataFrame({
+    "qubit": [f"q{q}" for q in range(M)] + ["overall"],
+    "rmse_noisy": list(rmse_un_x) + [rmse_un_x.mean()],
+    "rmse_rf": list(rmse_rf_x) + [rmse_rf_x.mean()],
+    "rmse_qagt": list(rmse_qagt_x) + [rmse_qagt_x.mean()],
+})
+print(rmse_table.to_string(index=False, float_format=lambda v: f"{v:.4f}"))
+rmse_table.to_csv(f"{RUN_DIR}/rmse_comparison_tier01.csv", index=False)"""
+
+
+def tier01_cells():
+    """The Tier 0 + Tier 1 section, as nbformat cells."""
+    return [
+        nbf.v4.new_markdown_cell(TIER01_INTRO),
+        nbf.v4.new_code_cell(TIER01_DETECT),
+        nbf.v4.new_code_cell(TIER01_TRAIN),
+        nbf.v4.new_code_cell(TIER01_ENSEMBLE),
+        nbf.v4.new_code_cell(TIER01_COMPARE),
+        nbf.v4.new_code_cell(TIER01_FIGURE),
+    ]
+
+
 def make_notebook(cfg: dict) -> nbf.NotebookNode:
     nb = nbf.v4.new_notebook()
     cells = []
@@ -348,6 +521,8 @@ def make_notebook(cfg: dict) -> nbf.NotebookNode:
         "plt.savefig(f\"{RUN_DIR}/rmse_comparison.png\")\n"
         "plt.show()"
     ))
+
+    cells.extend(tier01_cells())
 
     nb["cells"] = cells
     return nb
