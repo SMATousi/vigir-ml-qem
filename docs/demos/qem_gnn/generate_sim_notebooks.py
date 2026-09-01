@@ -117,7 +117,7 @@ DATASETS = [
 TIER01_INTRO = """## Tier 0 + Tier 1: discrete-level head and a configurable training loop
 
 Opt-in additions living in `qem_levels.py` / `qem_ext.py` / `qem_train.py`. `model.py` and
-`train_loop.py` are untouched, so every cell above keeps its original behaviour --
+`train_loop.py` are untouched, so the other applications that import them are unaffected --
 `QEMGraphTransformerX(head="scalar")` has a bit-identical `state_dict` to
 `QEMGraphTransformer`, and `TrainConfig()`'s defaults reproduce the original loop exactly.
 
@@ -158,9 +158,8 @@ print(levels, "|", level_report(y_train_all, levels))"""
 
 TIER01_TRAIN = """# Capacity/dropout follow Tier 1: the original run underfits, so keep d_model at
 # least 64 and drop the dropout that was regularising overfitting that isn't
-# there. Layers/heads match model_cfg from the cell above.
-cfg_common = dict(d_model=max(64, model_cfg["d_model"]),
-                  layers=model_cfg["layers"], heads=model_cfg["heads"],
+# there.
+cfg_common = dict(d_model=128, layers=3, heads=4,
                   dropout=0.05, use_noisy=True)
 
 if levels is not None:
@@ -194,7 +193,6 @@ TIER01_COMPARE = """from sklearn.ensemble import RandomForestClassifier
 rows = {}
 rows["Noisy (unmitigated)"] = metrics(noisy_np, ideal_np, levels)
 rows["RF regressor"] = metrics(rf_preds, y_val.numpy(), levels)
-rows["QAGT-MLP original (raw)"] = metrics(gnn_np, ideal_np, levels)
 
 if levels is not None:
     lv = np.asarray(levels.levels)
@@ -210,7 +208,6 @@ if levels is not None:
         for q in range(M)
     ], axis=1)
     rows["RF classifier"] = metrics(rf_clf_pred, y_val.numpy(), levels)
-    rows["QAGT-MLP original (snapped)"] = metrics(snap_np(gnn_np), ideal_np, levels)
 
 # argmax is the MAE-optimal decoding of the level head; sum_k p_k * l_k is the
 # RMSE-optimal one (hedging *is* correct under squared error). Report both.
@@ -287,9 +284,9 @@ def make_notebook(cfg: dict) -> nbf.NotebookNode:
 
     cells.append(nbf.v4.new_markdown_cell(
         f"# {cfg['title']}\n\n"
-        f"Build graphs from `{cfg['train_dir']}`, train the graph-Transformer "
-        "QEM model (`QEMGraphTransformer`), train a per-qubit Random Forest "
-        "baseline on the same split, and compare both against the ideal "
+        f"Build graphs from `{cfg['train_dir']}`, train a per-qubit Random Forest "
+        "baseline, and train the graph-Transformer QEM model in the Tier 0+1 "
+        "section at the end; both are compared against the ideal "
         "expectation values on the validation split.\n\n"
         "Unlike the Brisbane hardware notebooks, this dataset already carries "
         "`ideal_exp_value` / `noisy_exp_values` per circuit, so there is no "
@@ -412,31 +409,22 @@ def make_notebook(cfg: dict) -> nbf.NotebookNode:
     ))
 
     cells.append(nbf.v4.new_code_cell(
-        "model_cfg = dict(d_model=128, layers=3, heads=4, dropout=0.1, use_noisy=True)\n"
-        "net, hist = train(model_cfg, (train_loader, val_loader), epochs=100, lr=1e-3, wd=1e-4,\n"
-        "                   patience=30, device='cpu',\n"
-        "                   best_ckpt_path=f\"{RUN_DIR}/best_qem_graph_transformer.pt\")\n"
-        "total_params = sum(p.numel() for p in net.parameters())\n"
-        "print(\"Total params:\", total_params)"
-    ))
-
-    cells.append(nbf.v4.new_code_cell(
         "device = \"cuda\" if torch.cuda.is_available() else \"cpu\"\n"
-        "net.to(device)\n"
         "\n"
+        "# The original QEMGraphTransformer training used to live here. It cost ~35 min\n"
+        "# per notebook and its only surviving product was the ideal/noisy pair below,\n"
+        "# which needs no model at all -- so it is gone. The Tier 0+1 section further\n"
+        "# down trains the model this notebook actually reports on.\n"
         "@torch.no_grad()\n"
-        "def collect_pred_target_noisy(loader, model, M, device):\n"
-        "    model.eval()\n"
-        "    P, Y, N = [], [], []\n"
+        "def collect_target_noisy(loader, M):\n"
+        "    Y, N = [], []\n"
         "    for batch in loader:\n"
-        "        batch = batch.to(device)\n"
-        "        y_hat = model(batch)\n"
-        "        P.append(y_hat.detach().cpu()); Y.append(batch.y.detach().cpu()); N.append(batch.noisy_z.detach().cpu())\n"
-        "    return torch.cat(P).view(-1, M), torch.cat(Y).view(-1, M), torch.cat(N).view(-1, M)\n"
+        "        Y.append(batch.y.detach().cpu())\n"
+        "        N.append(batch.noisy_z.detach().cpu())\n"
+        "    return torch.cat(Y).view(-1, M), torch.cat(N).view(-1, M)\n"
         "\n"
-        "P, Y, N = collect_pred_target_noisy(val_loader, net, M, device)\n"
-        "gnn_mae = (P - Y).abs().mean(dim=0).tolist()\n"
-        "print(\"Per-qubit MAE (GNN):\", gnn_mae)"
+        "Y, N = collect_target_noisy(val_loader, M)\n"
+        "print(f\"val points: {Y.shape[0]} circuits x {M} qubits\")"
     ))
 
     cells.append(nbf.v4.new_markdown_cell("## Random Forest baseline\n\nTrained/evaluated on the *same* train/val circuits as the GNN (matched by `circuit_path`)."))
@@ -472,28 +460,25 @@ def make_notebook(cfg: dict) -> nbf.NotebookNode:
         "print(\"Per-qubit MAE (RF):\", rf_mae)"
     ))
 
-    cells.append(nbf.v4.new_markdown_cell("## Comparison: unmitigated noisy vs RF vs GNN"))
+    cells.append(nbf.v4.new_markdown_cell("## Comparison: unmitigated noisy vs RF"))
 
     cells.append(nbf.v4.new_code_cell(
         "noisy_np = N.numpy()\n"
-        "gnn_np = P.numpy()\n"
         "ideal_np = Y.numpy()\n"
         "\n"
         "def rmse_per_qubit(pred, ideal):\n"
         "    return np.sqrt(((pred - ideal) ** 2).mean(axis=0))\n"
         "\n"
         "rmse_noisy = rmse_per_qubit(noisy_np, ideal_np)\n"
-        "rmse_gnn = rmse_per_qubit(gnn_np, ideal_np)\n"
         "rmse_rf = rmse_per_qubit(rf_preds, y_val.numpy())\n"
         "\n"
         "results = pd.DataFrame({\n"
         "    \"qubit\": [f\"q{q}\" for q in range(M)],\n"
         "    \"rmse_noisy\": rmse_noisy,\n"
         "    \"rmse_rf\": rmse_rf,\n"
-        "    \"rmse_gnn\": rmse_gnn,\n"
         "})\n"
         "overall = pd.DataFrame([{\"qubit\": \"overall\", \"rmse_noisy\": rmse_noisy.mean(),\n"
-        "                        \"rmse_rf\": rmse_rf.mean(), \"rmse_gnn\": rmse_gnn.mean()}])\n"
+        "                        \"rmse_rf\": rmse_rf.mean()}])\n"
         "results = pd.concat([results, overall], ignore_index=True)\n"
         "print(results)\n"
         "\n"
@@ -501,18 +486,17 @@ def make_notebook(cfg: dict) -> nbf.NotebookNode:
         "with open(f\"{RUN_DIR}/comparison_results.json\", \"w\") as f:\n"
         "    json.dump({\n"
         "        \"dataset\": DATASET_NAME,\n"
-        "        \"rmse_noisy\": rmse_noisy.tolist(), \"rmse_rf\": rmse_rf.tolist(), \"rmse_gnn\": rmse_gnn.tolist(),\n"
+        "        \"rmse_noisy\": rmse_noisy.tolist(), \"rmse_rf\": rmse_rf.tolist(),\n"
         "        \"n_train\": len(train_loader.dataset), \"n_val\": len(val_loader.dataset),\n"
         "    }, f, indent=2)"
     ))
 
     cells.append(nbf.v4.new_code_cell(
         "x = np.arange(M)\n"
-        "width = 0.25\n"
+        "width = 0.35\n"
         "plt.figure(figsize=(8, 5))\n"
-        "plt.bar(x - width, rmse_noisy, width, label=\"Noisy (unmitigated)\")\n"
-        "plt.bar(x, rmse_rf, width, label=\"RF\")\n"
-        "plt.bar(x + width, rmse_gnn, width, label=\"GNN (QAGT-MLP)\")\n"
+        "plt.bar(x - width / 2, rmse_noisy, width, label=\"Noisy (unmitigated)\")\n"
+        "plt.bar(x + width / 2, rmse_rf, width, label=\"RF\")\n"
         "plt.xticks(x, [f\"q{q}\" for q in range(M)])\n"
         "plt.ylabel(\"RMSE vs ideal\")\n"
         "plt.title(f\"{DATASET_NAME}: RMSE by qubit (lower is better)\")\n"
