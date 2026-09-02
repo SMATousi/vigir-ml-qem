@@ -7,7 +7,12 @@ def node_qubits(node: DAGOpNode):
 def build_predecessor_map(dag: DAGCircuit):
     pred = {}
     for node in dag.op_nodes():
-        pred[node] = [e.node for e in dag.predecessors(node) if hasattr(e, "node") and isinstance(e.node, DAGOpNode)]
+        # dag.predecessors() yields DAGNode objects directly in this qiskit
+        # version -- they have no `.node` attribute, so the old
+        # `[e.node for e in ... if hasattr(e, "node")]` filter silently
+        # returned [] for every node, collapsing every backward lightcone to
+        # "the gates touching this wire" and every moment index to 0.
+        pred[node] = [p for p in dag.predecessors(node) if isinstance(p, DAGOpNode)]
     return pred
 
 def compute_lightcone_nodes(dag: DAGCircuit, measured_qubits: List[int]):
