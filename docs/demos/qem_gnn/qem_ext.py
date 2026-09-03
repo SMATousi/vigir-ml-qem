@@ -106,6 +106,69 @@ class QEMLevelHead(nn.Module):
         return logits
 
 
+class QubitConditionedPoolingV2(nn.Module):
+    """Attention pooling whose query actually depends on the target qubit.
+
+    model.py's QubitConditionedPooling scores each node with a single shared
+    `query` parameter, so the logit of node n does not depend on the target m
+    at all -- the lightcone mask is the only thing separating output column m
+    from m'. Once the lightcone is computed correctly it covers 87-98% of the
+    nodes and overlaps 0.90-0.98 across targets, so the M pooled vectors
+    collapse onto each other (measured: cosine 1.0000 on two of three
+    datasets). This module restores the distinction on purpose:
+
+      query   q_m       = MLP([embed(physical_qubit_m), noisy_z_m])
+      logit   l_nm      = <K h_n, q_m> / sqrt(d)  +  alpha * wire_nm
+      pooled  p_m       = softmax_n(l_nm masked to the lightcone) @ H
+
+    The lightcone stays the hard support -- what can physically influence the
+    observable -- while wire membership enters as a learned soft preference
+    for gates sitting directly on the observable's own wire.
+    """
+
+    def __init__(self, d_model: int, max_qubits: int = 64, use_noisy: bool = True,
+                 use_wire: bool = True, prior_alpha: float = 1.0):
+        super().__init__()
+        self.use_noisy = use_noisy
+        self.use_wire = use_wire
+        self.d_model = d_model
+        self.key = nn.Linear(d_model, d_model)
+        self.qubit_emb = nn.Embedding(max_qubits, d_model)
+        in_q = d_model + (1 if use_noisy else 0)
+        self.q_proj = nn.Sequential(
+            nn.Linear(in_q, d_model), nn.GELU(), nn.Linear(d_model, d_model)
+        )
+        if use_wire:
+            self.alpha = nn.Parameter(torch.tensor(float(prior_alpha)))
+
+    def forward(self, H, masks, ptr, measured_qubits=None, noisy_z=None, wire_masks=None):
+        M = masks.shape[1]
+        B = ptr.numel() - 1
+        scale = self.d_model ** 0.5
+        K = self.key(H)
+
+        pooled_chunks, global_chunks = [], []
+        for b in range(B):
+            s, e = int(ptr[b]), int(ptr[b + 1])
+            Hb, Kb, mb = H[s:e], K[s:e], masks[s:e, :]
+
+            qids = measured_qubits[b * M:(b + 1) * M]              # [M]
+            qfeat = self.qubit_emb(qids)                           # [M, d]
+            if self.use_noisy:
+                nz = noisy_z[b * M:(b + 1) * M].view(M, 1)
+                qfeat = torch.cat([qfeat, nz], dim=1)
+            q = self.q_proj(qfeat)                                 # [M, d]
+
+            logits = (Kb @ q.t()) / scale                          # [Nb, M]
+            if self.use_wire and wire_masks is not None:
+                logits = logits + self.alpha * wire_masks[s:e, :]
+
+            attn = torch.softmax(logits.masked_fill(mb <= 0, float("-inf")), dim=0)
+            pooled_chunks.append(torch.einsum("nm,nd->md", attn, Hb))
+            global_chunks.append(Hb.mean(dim=0))
+
+        return torch.cat(pooled_chunks, dim=0), torch.stack(global_chunks, dim=0)
+
 class QEMGraphTransformerX(nn.Module):
     """QEMGraphTransformer with a configurable head.
 
@@ -118,7 +181,8 @@ class QEMGraphTransformerX(nn.Module):
     def __init__(self, in_dim: int, d_model: int = 128, layers: int = 3, heads: int = 4,
                  dropout: float = 0.2, use_noisy: bool = True,
                  head: str = "scalar", levels: Optional[LevelSet] = None,
-                 noisy_prior: bool = True, zero_init_head: bool = True):
+                 noisy_prior: bool = True, zero_init_head: bool = True,
+                 pool: str = "shared"):
         super().__init__()
         if head not in ("scalar", "residual", "level"):
             raise ValueError(f"unknown head {head!r}")
@@ -129,8 +193,12 @@ class QEMGraphTransformerX(nn.Module):
 
         self.head_kind = head
         self.levels = levels
+        if pool not in ("shared", "conditioned"):
+            raise ValueError(f"unknown pool {pool!r}")
+        self.pool_kind = pool
         self.encoder = GraphEncoder(in_dim, d_model, layers, heads, dropout)
-        self.pool = QubitConditionedPooling(d_model)
+        self.pool = (QubitConditionedPooling(d_model) if pool == "shared"
+                     else QubitConditionedPoolingV2(d_model, use_noisy=use_noisy))
         if head == "scalar":
             self.head = QEMHead(d_model, use_noisy=use_noisy, hidden=d_model, dropout=dropout)
         elif head == "residual":
@@ -147,8 +215,15 @@ class QEMGraphTransformerX(nn.Module):
 
     def forward(self, data):
         H = self.encoder(data.x, data.edge_index)
-        pooled_all, global_all = self.pool(H, data.lightcone_masks, data.ptr)
         noisy = getattr(data, "noisy_z", None)
+        if self.pool_kind == "conditioned":
+            pooled_all, global_all = self.pool(
+                H, data.lightcone_masks, data.ptr,
+                measured_qubits=data.measured_qubits, noisy_z=noisy,
+                wire_masks=getattr(data, "wire_masks", None),
+            )
+        else:
+            pooled_all, global_all = self.pool(H, data.lightcone_masks, data.ptr)
         return self.head(pooled_all, global_all, noisy)
 
     def decode(self, out: torch.Tensor, mode: str = "argmax") -> torch.Tensor:

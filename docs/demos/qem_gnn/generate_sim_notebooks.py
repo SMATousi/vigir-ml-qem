@@ -160,7 +160,12 @@ TIER01_TRAIN = """# Capacity/dropout follow Tier 1: the original run underfits, 
 # least 64 and drop the dropout that was regularising overfitting that isn't
 # there.
 cfg_common = dict(d_model=128, layers=3, heads=4,
-                  dropout=0.05, use_noisy=True)
+                  dropout=0.05, use_noisy=True,
+                  # Tier 2: query conditioned on the target qubit + wire-membership
+                  # bias. With the corrected lightcone covering ~90%+ of nodes, the
+                  # shared-query pooling produced identical pooled vectors for every
+                  # measured qubit (cosine 1.0000) and the encoder collapsed.
+                  pool="conditioned")
 
 if levels is not None:
     # Tier 0: K-way classification over the detected levels.

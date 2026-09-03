@@ -58,6 +58,22 @@ def circuit_to_gategraph_data(
     lightcone_masks = (np.stack(masks, axis=1) if masks
                    else np.zeros((len(nodes), 0), dtype=np.float32))  # (num_nodes, num_measured)
 
+    # Wire membership: does node n act on measured qubit q's own wire?
+    # The true backward lightcone of a shallow-but-entangling circuit covers
+    # almost every node, so lightcone_masks alone barely distinguishes one
+    # measured qubit from another. This is a strictly more local signal --
+    # which gates sit directly on the observable's wire -- kept separate so
+    # pooling can use the lightcone as the hard support and this as a soft
+    # preference.
+    wire = []
+    for q in measured_qubits:
+        m = np.zeros(len(nodes), dtype=np.float32)
+        for n in qubit_to_nodes.get(q, []):
+            m[node_idx[n]] = 1.0
+        wire.append(m)
+    wire_masks = (np.stack(wire, axis=1) if wire
+                  else np.zeros((len(nodes), 0), dtype=np.float32))
+
 
     data = Data(
         x=to_torch(x, "float"),
@@ -65,6 +81,7 @@ def circuit_to_gategraph_data(
     )
     data.num_nodes = x.shape[0]
     data.lightcone_masks = to_torch(lightcone_masks, "float")
+    data.wire_masks = to_torch(wire_masks, "float")
     import numpy as _np
     data.measured_qubits = to_torch(_np.array(measured_qubits, dtype=_np.int64), "long")
     data.num_measured = len(measured_qubits)
