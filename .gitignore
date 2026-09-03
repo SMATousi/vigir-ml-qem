@@ -200,3 +200,7 @@ docs/demos/graph_approach/processed/*
 docs/demos/qem_gnn/processed/*
 docs/demos/qem_gnn/raw/*
 docs/demos/qem_gnn/runs/*
+# 100q rebuild artifacts (graphs ~742MB, checkpoints); scripts and results JSON are kept
+docs/demos/qem_gnn/runs100q/*.pt
+docs/demos/qem_gnn/runs100q/*.csv
+docs/demos/qem_gnn/runs100q/*.log
