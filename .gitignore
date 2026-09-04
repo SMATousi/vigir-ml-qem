@@ -204,3 +204,5 @@ docs/demos/qem_gnn/runs/*
 docs/demos/qem_gnn/runs100q/*.pt
 docs/demos/qem_gnn/runs100q/*.csv
 docs/demos/qem_gnn/runs100q/*.log
+docs/demos/qem_gnn/runs_ablation/*.pt
+docs/demos/qem_gnn/runs_ablation/*.log

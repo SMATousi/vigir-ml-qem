@@ -42,10 +42,11 @@ class QEMResidualHead(nn.Module):
     """Scalar head that predicts a *correction* to noisy_z rather than the value."""
 
     def __init__(self, d_model: int, hidden: int = 128, dropout: float = 0.2,
-                 zero_init: bool = True):
+                 zero_init: bool = True, desc_dim: int = 0):
         super().__init__()
+        self.desc_dim = desc_dim
         self.mlp = nn.Sequential(
-            nn.Linear(2 * d_model + 1, hidden),
+            nn.Linear(2 * d_model + 1 + desc_dim, hidden),
             nn.GELU(),
             nn.Dropout(dropout),
             nn.Linear(hidden, 1),
@@ -53,13 +54,16 @@ class QEMResidualHead(nn.Module):
         if zero_init:
             _zero_init_last_linear(self.mlp)
 
-    def forward(self, pooled_all, global_all, noisy_z):
+    def forward(self, pooled_all, global_all, noisy_z, desc=None):
         assert noisy_z is not None, "residual head requires use_noisy=True"
         BM = pooled_all.size(0)
         M = BM // global_all.size(0)
         g = torch.repeat_interleave(global_all, repeats=M, dim=0)
         n = noisy_z.view(BM, 1)
-        return (n + self.mlp(torch.cat([pooled_all, g, n], dim=1))).squeeze(-1)
+        feats = [pooled_all, g, n]
+        if self.desc_dim:
+            feats.append(torch.repeat_interleave(desc, repeats=M, dim=0))
+        return (n + self.mlp(torch.cat(feats, dim=1))).squeeze(-1)
 
 
 class QEMLevelHead(nn.Module):
@@ -68,13 +72,14 @@ class QEMLevelHead(nn.Module):
     def __init__(self, d_model: int, levels: LevelSet, use_noisy: bool = True,
                  hidden: int = 128, dropout: float = 0.2,
                  noisy_prior: bool = True, zero_init: bool = True,
-                 prior_gamma: float = 10.0):
+                 prior_gamma: float = 10.0, desc_dim: int = 0):
         super().__init__()
         self.use_noisy = use_noisy
         self.K = levels.K
+        self.desc_dim = desc_dim
         self.register_buffer("levels", levels.tensor())
         self.noisy_prior = noisy_prior and use_noisy
-        in_dim = 2 * d_model + (1 if use_noisy else 0)
+        in_dim = 2 * d_model + (1 if use_noisy else 0) + desc_dim
         self.mlp = nn.Sequential(
             nn.Linear(in_dim, hidden),
             nn.GELU(),
@@ -88,15 +93,17 @@ class QEMLevelHead(nn.Module):
             inv = torch.log(torch.expm1(torch.tensor(float(prior_gamma))))
             self.raw_gamma = nn.Parameter(inv)
 
-    def forward(self, pooled_all, global_all, noisy_z=None):
+    def forward(self, pooled_all, global_all, noisy_z=None, desc=None):
         BM = pooled_all.size(0)
         M = BM // global_all.size(0)
         g = torch.repeat_interleave(global_all, repeats=M, dim=0)
+        parts = [pooled_all, g]
         if self.use_noisy:
             assert noisy_z is not None, "noisy_z required when use_noisy=True"
-            feats = torch.cat([pooled_all, g, noisy_z.view(BM, 1)], dim=1)
-        else:
-            feats = torch.cat([pooled_all, g], dim=1)
+            parts.append(noisy_z.view(BM, 1))
+        if self.desc_dim:
+            parts.append(torch.repeat_interleave(desc, repeats=M, dim=0))
+        feats = torch.cat(parts, dim=1)
 
         logits = self.mlp(feats)  # [B*M, K]
         if self.noisy_prior:
@@ -182,7 +189,7 @@ class QEMGraphTransformerX(nn.Module):
                  dropout: float = 0.2, use_noisy: bool = True,
                  head: str = "scalar", levels: Optional[LevelSet] = None,
                  noisy_prior: bool = True, zero_init_head: bool = True,
-                 pool: str = "shared"):
+                 pool: str = "shared", desc_dim: int = 0, graph_off: bool = False):
         super().__init__()
         if head not in ("scalar", "residual", "level"):
             raise ValueError(f"unknown head {head!r}")
@@ -193,6 +200,8 @@ class QEMGraphTransformerX(nn.Module):
 
         self.head_kind = head
         self.levels = levels
+        self.desc_dim = desc_dim
+        self.graph_off = graph_off
         if pool not in ("shared", "conditioned"):
             raise ValueError(f"unknown pool {pool!r}")
         self.pool_kind = pool
@@ -200,14 +209,16 @@ class QEMGraphTransformerX(nn.Module):
         self.pool = (QubitConditionedPooling(d_model) if pool == "shared"
                      else QubitConditionedPoolingV2(d_model, use_noisy=use_noisy))
         if head == "scalar":
+            if desc_dim:
+                raise ValueError("desc_dim is only supported for the residual/level heads")
             self.head = QEMHead(d_model, use_noisy=use_noisy, hidden=d_model, dropout=dropout)
         elif head == "residual":
             self.head = QEMResidualHead(d_model, hidden=d_model, dropout=dropout,
-                                        zero_init=zero_init_head)
+                                        zero_init=zero_init_head, desc_dim=desc_dim)
         else:
             self.head = QEMLevelHead(d_model, levels, use_noisy=use_noisy, hidden=d_model,
                                      dropout=dropout, noisy_prior=noisy_prior,
-                                     zero_init=zero_init_head)
+                                     zero_init=zero_init_head, desc_dim=desc_dim)
 
     @property
     def is_classifier(self) -> bool:
@@ -224,6 +235,18 @@ class QEMGraphTransformerX(nn.Module):
             )
         else:
             pooled_all, global_all = self.pool(H, data.lightcone_masks, data.ptr)
+
+        if self.graph_off:
+            # descriptors-only ablation: keep the graph path in the parameter
+            # count and the gradient graph, but deny it any information
+            pooled_all = torch.zeros_like(pooled_all)
+            global_all = torch.zeros_like(global_all)
+
+        if self.desc_dim:
+            desc = getattr(data, "descriptors", None)
+            if desc is None:
+                raise ValueError("desc_dim set but graphs carry no `descriptors`")
+            return self.head(pooled_all, global_all, noisy, desc.view(global_all.size(0), -1))
         return self.head(pooled_all, global_all, noisy)
 
     def decode(self, out: torch.Tensor, mode: str = "argmax") -> torch.Tensor:
