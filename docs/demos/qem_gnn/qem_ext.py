@@ -221,7 +221,8 @@ class QEMGraphTransformerX(nn.Module):
                  noisy_prior: bool = True, zero_init_head: bool = True,
                  pool: str = "shared", desc_dim: int = 0, graph_off: bool = False,
                  use_wire: bool = True, use_lightcone: bool = True,
-                 use_global: bool = True, backbone: str = "transformer"):
+                 use_global: bool = True, use_local: bool = True,
+                 backbone: str = "transformer"):
         super().__init__()
         if head not in ("scalar", "residual", "level"):
             raise ValueError(f"unknown head {head!r}")
@@ -235,6 +236,7 @@ class QEMGraphTransformerX(nn.Module):
         self.desc_dim = desc_dim
         self.graph_off = graph_off
         self.use_global = use_global
+        self.use_local = use_local
         if backbone not in ("transformer", "gcn"):
             raise ValueError(f"unknown backbone {backbone!r}")
         if pool not in ("shared", "conditioned"):
@@ -273,6 +275,10 @@ class QEMGraphTransformerX(nn.Module):
             )
         else:
             pooled_all, global_all = self.pool(H, data.lightcone_masks, data.ptr)
+
+        if not self.use_local:
+            # drop the qubit-local pooled context, keeping the global one
+            pooled_all = torch.zeros_like(pooled_all)
 
         if not self.use_global:
             # "no global" ablation: the head sees only the qubit-local context
