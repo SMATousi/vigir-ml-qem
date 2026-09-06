@@ -25,6 +25,8 @@ from typing import Optional
 import torch
 import torch.nn as nn
 
+from torch_geometric.nn import GCNConv
+
 from model import GraphEncoder, QubitConditionedPooling, QEMHead
 from qem_levels import LevelSet
 
@@ -113,6 +115,30 @@ class QEMLevelHead(nn.Module):
         return logits
 
 
+class GCNGraphEncoder(nn.Module):
+    """GraphEncoder with GCNConv in place of TransformerConv.
+
+    Used only for the "no attention" ablation: identical depth, width, residual
+    and normalisation, so the comparison isolates the attention operator.
+    """
+
+    def __init__(self, in_dim: int, d_model: int = 128, num_layers: int = 3,
+                 heads: int = 4, dropout: float = 0.2):
+        super().__init__()
+        self.proj = nn.Linear(in_dim, d_model)
+        self.layers = nn.ModuleList([GCNConv(d_model, d_model) for _ in range(num_layers)])
+        self.norms = nn.ModuleList([nn.LayerNorm(d_model) for _ in range(num_layers)])
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, x, edge_index):
+        h = self.proj(x)
+        for conv, ln in zip(self.layers, self.norms):
+            h_res = h
+            h = self.dropout(nn.functional.gelu(conv(h, edge_index)))
+            h = ln(h + h_res)
+        return h
+
+
 class QubitConditionedPoolingV2(nn.Module):
     """Attention pooling whose query actually depends on the target qubit.
 
@@ -134,10 +160,12 @@ class QubitConditionedPoolingV2(nn.Module):
     """
 
     def __init__(self, d_model: int, max_qubits: int = 64, use_noisy: bool = True,
-                 use_wire: bool = True, prior_alpha: float = 1.0):
+                 use_wire: bool = True, prior_alpha: float = 1.0,
+                 use_lightcone: bool = True):
         super().__init__()
         self.use_noisy = use_noisy
         self.use_wire = use_wire
+        self.use_lightcone = use_lightcone
         self.d_model = d_model
         self.key = nn.Linear(d_model, d_model)
         self.qubit_emb = nn.Embedding(max_qubits, d_model)
@@ -170,7 +198,9 @@ class QubitConditionedPoolingV2(nn.Module):
             if self.use_wire and wire_masks is not None:
                 logits = logits + self.alpha * wire_masks[s:e, :]
 
-            attn = torch.softmax(logits.masked_fill(mb <= 0, float("-inf")), dim=0)
+            if self.use_lightcone:
+                logits = logits.masked_fill(mb <= 0, float("-inf"))
+            attn = torch.softmax(logits, dim=0)
             pooled_chunks.append(torch.einsum("nm,nd->md", attn, Hb))
             global_chunks.append(Hb.mean(dim=0))
 
@@ -189,7 +219,9 @@ class QEMGraphTransformerX(nn.Module):
                  dropout: float = 0.2, use_noisy: bool = True,
                  head: str = "scalar", levels: Optional[LevelSet] = None,
                  noisy_prior: bool = True, zero_init_head: bool = True,
-                 pool: str = "shared", desc_dim: int = 0, graph_off: bool = False):
+                 pool: str = "shared", desc_dim: int = 0, graph_off: bool = False,
+                 use_wire: bool = True, use_lightcone: bool = True,
+                 use_global: bool = True, backbone: str = "transformer"):
         super().__init__()
         if head not in ("scalar", "residual", "level"):
             raise ValueError(f"unknown head {head!r}")
@@ -202,12 +234,18 @@ class QEMGraphTransformerX(nn.Module):
         self.levels = levels
         self.desc_dim = desc_dim
         self.graph_off = graph_off
+        self.use_global = use_global
+        if backbone not in ("transformer", "gcn"):
+            raise ValueError(f"unknown backbone {backbone!r}")
         if pool not in ("shared", "conditioned"):
             raise ValueError(f"unknown pool {pool!r}")
         self.pool_kind = pool
-        self.encoder = GraphEncoder(in_dim, d_model, layers, heads, dropout)
+        Enc = GraphEncoder if backbone == "transformer" else GCNGraphEncoder
+        self.encoder = Enc(in_dim, d_model, layers, heads, dropout)
         self.pool = (QubitConditionedPooling(d_model) if pool == "shared"
-                     else QubitConditionedPoolingV2(d_model, use_noisy=use_noisy))
+                     else QubitConditionedPoolingV2(d_model, use_noisy=use_noisy,
+                                                    use_wire=use_wire,
+                                                    use_lightcone=use_lightcone))
         if head == "scalar":
             if desc_dim:
                 raise ValueError("desc_dim is only supported for the residual/level heads")
@@ -235,6 +273,10 @@ class QEMGraphTransformerX(nn.Module):
             )
         else:
             pooled_all, global_all = self.pool(H, data.lightcone_masks, data.ptr)
+
+        if not self.use_global:
+            # "no global" ablation: the head sees only the qubit-local context
+            global_all = torch.zeros_like(global_all)
 
         if self.graph_off:
             # descriptors-only ablation: keep the graph path in the parameter
