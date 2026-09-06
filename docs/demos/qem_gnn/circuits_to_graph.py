@@ -65,11 +65,13 @@ def circuit_to_gategraph_data(
     # which gates sit directly on the observable's wire -- kept separate so
     # pooling can use the lightcone as the hard support and this as a soft
     # preference.
+    from lightcone import _causal
     wire = []
     for q in measured_qubits:
         m = np.zeros(len(nodes), dtype=np.float32)
         for n in qubit_to_nodes.get(q, []):
-            m[node_idx[n]] = 1.0
+            if _causal(n):
+                m[node_idx[n]] = 1.0
         wire.append(m)
     wire_masks = (np.stack(wire, axis=1) if wire
                   else np.zeros((len(nodes), 0), dtype=np.float32))
