@@ -1,0 +1,14 @@
+{
+ "shared query": {
+  "mae": 0.04822442680597305,
+  "cosine": 0.4913919270038605,
+  "std_across_qubits": 0.2305935025215149,
+  "std_across_circuits": 0.2676027715206146
+ },
+ "qubit-conditioned": {
+  "mae": 0.019925981760025024,
+  "cosine": 0.3113686144351959,
+  "std_across_qubits": 0.35010260343551636,
+  "std_across_circuits": 0.5532363653182983
+ }
+}

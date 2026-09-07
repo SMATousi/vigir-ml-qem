@@ -161,11 +161,12 @@ class QubitConditionedPoolingV2(nn.Module):
 
     def __init__(self, d_model: int, max_qubits: int = 64, use_noisy: bool = True,
                  use_wire: bool = True, prior_alpha: float = 1.0,
-                 use_lightcone: bool = True):
+                 use_lightcone: bool = True, use_qubit_emb: bool = True):
         super().__init__()
         self.use_noisy = use_noisy
         self.use_wire = use_wire
         self.use_lightcone = use_lightcone
+        self.use_qubit_emb = use_qubit_emb
         self.d_model = d_model
         self.key = nn.Linear(d_model, d_model)
         self.qubit_emb = nn.Embedding(max_qubits, d_model)
@@ -189,6 +190,11 @@ class QubitConditionedPoolingV2(nn.Module):
 
             qids = measured_qubits[b * M:(b + 1) * M]              # [M]
             qfeat = self.qubit_emb(qids)                           # [M, d]
+            if not self.use_qubit_emb:
+                # drop the learned identity of the target qubit from the query.
+                # Note this does not remove all conditioning: z_m still enters
+                # below, and the wire bias (if enabled) still enters the logit.
+                qfeat = torch.zeros_like(qfeat)
             if self.use_noisy:
                 nz = noisy_z[b * M:(b + 1) * M].view(M, 1)
                 qfeat = torch.cat([qfeat, nz], dim=1)
@@ -222,7 +228,7 @@ class QEMGraphTransformerX(nn.Module):
                  pool: str = "shared", desc_dim: int = 0, graph_off: bool = False,
                  use_wire: bool = True, use_lightcone: bool = True,
                  use_global: bool = True, use_local: bool = True,
-                 backbone: str = "transformer"):
+                 use_qubit_emb: bool = True, backbone: str = "transformer"):
         super().__init__()
         if head not in ("scalar", "residual", "level"):
             raise ValueError(f"unknown head {head!r}")
@@ -247,7 +253,8 @@ class QEMGraphTransformerX(nn.Module):
         self.pool = (QubitConditionedPooling(d_model) if pool == "shared"
                      else QubitConditionedPoolingV2(d_model, use_noisy=use_noisy,
                                                     use_wire=use_wire,
-                                                    use_lightcone=use_lightcone))
+                                                    use_lightcone=use_lightcone,
+                                                    use_qubit_emb=use_qubit_emb))
         if head == "scalar":
             if desc_dim:
                 raise ValueError("desc_dim is only supported for the residual/level heads")
