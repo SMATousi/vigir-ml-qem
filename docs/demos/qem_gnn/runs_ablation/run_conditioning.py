@@ -34,7 +34,12 @@ VARIANTS=[('emb + wire',   dict(pool='conditioned')),
           ('emb only',     dict(pool='conditioned', use_wire=False)),
           ('wire only',    dict(pool='conditioned', use_qubit_emb=False)),
           ('neither',      dict(pool='conditioned', use_wire=False, use_qubit_emb=False)),
-          ('shared query', dict(pool='shared'))]
+          ('shared query', dict(pool='shared')),
+          # The control the four variants above cannot provide: they all pool by
+          # a learned softmax and differ only in what enters the query, so none
+          # of them tests attention pooling itself. This one keeps the same
+          # causal support and averages it, with no pooling parameters at all.
+          ('uniform mean',  dict(pool='mean'))]
 res=json.load(open(OUT)) if os.path.exists(OUT) else {}
 
 def run(tag, trl, val, base, tc, levels=None):

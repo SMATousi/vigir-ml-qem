@@ -212,6 +212,54 @@ class QubitConditionedPoolingV2(nn.Module):
 
         return torch.cat(pooled_chunks, dim=0), torch.stack(global_chunks, dim=0)
 
+class UniformLightconePooling(nn.Module):
+    """Pooling that averages the causal support instead of attending over it.
+
+    Same support, same head inputs, no attention: the weights of
+    Equation (4) are replaced by the uniform distribution over
+    :math:`\\mathcal{L}_m`,
+
+        p_m = (1 / |L_m|) * sum_{n in L_m} h_n
+
+    This is the control the conditioning ablation does not provide. That study
+    varies what enters the query (the qubit embedding, the wire bias, the noisy
+    value) but every one of its variants still pools by a learned softmax, so it
+    cannot say whether attention pooling beats simply averaging the cone. Here
+    the query, the keys and the wire bias are all absent -- there are no pooling
+    parameters at all -- and only the reduction changes.
+
+    A graph with an empty cone for some target falls back to the graph mean, so
+    the column is never undefined.
+    """
+
+    def __init__(self, d_model: int, use_lightcone: bool = True):
+        super().__init__()
+        self.d_model = d_model
+        self.use_lightcone = use_lightcone
+
+    def forward(self, H, masks, ptr, measured_qubits=None, noisy_z=None,
+                wire_masks=None):
+        M = masks.shape[1]
+        B = ptr.numel() - 1
+        pooled_chunks, global_chunks = [], []
+        for b in range(B):
+            s, e = int(ptr[b]), int(ptr[b + 1])
+            Hb, mb = H[s:e], masks[s:e, :]
+            if self.use_lightcone:
+                w = (mb > 0).to(Hb.dtype)                      # [Nb, M]
+            else:
+                w = torch.ones_like(mb)
+            cnt = w.sum(dim=0, keepdim=True)                   # [1, M]
+            empty = (cnt <= 0)
+            w = w / cnt.clamp_min(1.0)
+            pooled = torch.einsum("nm,nd->md", w, Hb)          # [M, d]
+            if bool(empty.any()):
+                pooled = torch.where(empty.view(M, 1), Hb.mean(dim=0, keepdim=True), pooled)
+            pooled_chunks.append(pooled)
+            global_chunks.append(Hb.mean(dim=0))
+        return torch.cat(pooled_chunks, dim=0), torch.stack(global_chunks, dim=0)
+
+
 class QEMGraphTransformerX(nn.Module):
     """QEMGraphTransformer with a configurable head.
 
@@ -245,16 +293,20 @@ class QEMGraphTransformerX(nn.Module):
         self.use_local = use_local
         if backbone not in ("transformer", "gcn"):
             raise ValueError(f"unknown backbone {backbone!r}")
-        if pool not in ("shared", "conditioned"):
+        if pool not in ("shared", "conditioned", "mean"):
             raise ValueError(f"unknown pool {pool!r}")
         self.pool_kind = pool
         Enc = GraphEncoder if backbone == "transformer" else GCNGraphEncoder
         self.encoder = Enc(in_dim, d_model, layers, heads, dropout)
-        self.pool = (QubitConditionedPooling(d_model) if pool == "shared"
-                     else QubitConditionedPoolingV2(d_model, use_noisy=use_noisy,
-                                                    use_wire=use_wire,
-                                                    use_lightcone=use_lightcone,
-                                                    use_qubit_emb=use_qubit_emb))
+        if pool == "shared":
+            self.pool = QubitConditionedPooling(d_model)
+        elif pool == "mean":
+            self.pool = UniformLightconePooling(d_model, use_lightcone=use_lightcone)
+        else:
+            self.pool = QubitConditionedPoolingV2(d_model, use_noisy=use_noisy,
+                                                  use_wire=use_wire,
+                                                  use_lightcone=use_lightcone,
+                                                  use_qubit_emb=use_qubit_emb)
         if head == "scalar":
             if desc_dim:
                 raise ValueError("desc_dim is only supported for the residual/level heads")
