@@ -35,7 +35,8 @@ def rows(device):
         out.append(dict(label=label, kl=v['kl'], tv=v['tv'], hell=v['hellinger'],
                         rel=v.get('kl_rel_change', 0.0), sd=0.0,
                         kind='unmit' if k == 'unmitigated' else 'theirs'))
-    for tag, label, kind in [('qagt', 'QAGT-MLP (ours)', 'ours'),
+    for tag, label, kind in [('qagt_nocal', 'QAGT-MLP (ours)', 'ours'),
+                             ('qagt', 'QAGT-MLP, + calibration block', 'ours_ab'),
                              ('qagt_nograph', 'QAGT-MLP, graph off', 'ours_ab')]:
         p = f'{B}/results_{device}_{tag}.json'
         if os.path.exists(p):
@@ -77,7 +78,7 @@ for ax, device in zip(axes, ('algiers', 'hanoi')):
 
 h = [plt.Rectangle((0, 0), 1, 1, color=COL[k]) for k in ('unmit', 'theirs', 'ours', 'ours_ab', 'blind')]
 fig.legend(h, ['unmitigated', 'Placidi et al. checkpoints', 'QAGT-MLP (ours)',
-               'ours, graph pathway off', 'MLP on measured distribution only'],
+               'ours, ablated variants', 'MLP on measured distribution only'],
            loc='lower center', ncol=5, frameon=False, fontsize=8.6, bbox_to_anchor=(0.5, -0.03))
 plt.tight_layout(rect=[0, 0.06, 1, 1])
 out = os.path.join(FIG, 'quantinuum-benchmark.png')
