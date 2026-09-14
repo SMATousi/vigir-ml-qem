@@ -30,6 +30,6 @@ ax[2].annotate('step 1: reference spread\nnear-degenerate (std 0.02)', xy=(1,nn[
 for a in ax:
     a.set_xticks(s); a.grid(alpha=0.25,lw=0.6); a.spines[['top','right']].set_visible(False)
 plt.tight_layout()
-plt.savefig('/root/papers/68a48de7934fcfad1330c50a/Figures/per-step-normalised-error.png',dpi=200)
+plt.savefig('/root/papers/68a48de7934fcfad1330c50a/Figures/per-step-normalized-error.png',dpi=200)
 print('saved | mean normalised error, steps 2-10: noisy %.3f  QAGT %.3f'%(nn[1:].mean(),nq[1:].mean()))
 print('       spread of normalised error over steps 2-10: noisy %.3f  QAGT %.3f'%(nn[1:].std(),nq[1:].std()))
